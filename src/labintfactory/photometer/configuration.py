@@ -1,5 +1,5 @@
-import ipywidgets as widgets
-import ipysheet
+import ipywidgets as widgets # type: ignore
+import ipysheet # type: ignore
 
 from labintfactory.photometer.photometer import Photometer
 from labintfactory.utils.interface_widgets import AButton,ADropdown,AIntSlider
@@ -7,7 +7,7 @@ from labintfactory.utils.interface_widgets import AButton,ADropdown,AIntSlider
 class ConfigurationWidget:
     
     def __init__(self,output:widgets.Output,microcontroller):
-        self.__subwidgets=[]
+        self.__subwidgets:list=[]
         self.__microcontroller=microcontroller
         self.__photometer=Photometer(microcontroller)
         self.__samples=self._samples_widget()

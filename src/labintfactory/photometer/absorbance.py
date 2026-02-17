@@ -1,11 +1,11 @@
 import time
 import serial
 import serial.tools.list_ports
-import ipywidgets as widgets
-import ipysheet
+import ipywidgets as widgets # type: ignore
+import ipysheet # type: ignore
 import matplotlib.pyplot as plt
 import math
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression # type: ignore
 import numpy as np
 
 
@@ -42,6 +42,7 @@ class Absorbance:
                         else:
                             self.__calibration.disable()
                     case 3:
+                        self.__measure.show_graph()
                         if self.__configuration.photometer.is_calibrated:
                             self.__measure.enable()
                         else:

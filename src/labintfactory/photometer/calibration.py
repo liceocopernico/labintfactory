@@ -1,7 +1,7 @@
-import ipywidgets as widgets
-import ipysheet
+import ipywidgets as widgets # type: ignore
+import ipysheet # type: ignore
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression # type: ignore
 import numpy as np
 import json
 import datetime

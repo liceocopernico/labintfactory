@@ -22,7 +22,6 @@ class Microcontroller:
         
 
     def handshake(self,sleep_time=1):
-        
         self.flush_buffer()
         self.send_command('y')
         handshake_response=self.send_command('h')
@@ -35,20 +34,9 @@ class Microcontroller:
         self.__timeout=timeout
         
         try:
-            #self.__device=serial.Serial()
-            #self.__device.port = self.__com
-            #self.__device.baudrate = self.__baud
-            #self.__device.timeout=self.__timeout
-            #self.__device.setRTS(False)
-            #self.__device.setDTR(False)
-            #self.__device.open()
-            #time.sleep(5)
-            #ser.setRTS(True)
-            #ser.setDTR(True)
-            
             self.__device=serial.Serial(self.__com, baudrate=self.__baud, timeout=self.__timeout, dsrdtr=False)
             self.__connected=True
-            #self.__device.setRTS(True)
+            
         except Exception as e:
              print(e)
              return False

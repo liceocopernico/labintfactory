@@ -1059,9 +1059,9 @@ wheels = [
 ]
 
 [[package]]
-name = "labintfactory-project"
-version = "0.1.0"
-source = { virtual = "." }
+name = "labintfactory"
+version = "0.1.1"
+source = { editable = "." }
 dependencies = [
     { name = "gdx" },
     { name = "godirect" },
