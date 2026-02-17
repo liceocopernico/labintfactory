@@ -1,0 +1,34 @@
+[build-system]
+requires = ["uv_build >= 0.10.0, <0.11.0"]
+build-backend = "uv_build"
+
+[project]
+name = "labintfactory"
+version = "0.1.1"
+description = "Jupyterlab interface factory"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "gdx>=3",
+    "godirect>=1.2.1",
+    "ipympl>=0.10.0",
+    "ipysheet>=0.7.0",
+    "ipywidgets>=8.1.8",
+    "jupyter>=1.1.1",
+    "pyserial>=3.5",
+    "scikit-learn>=1.8.0",
+]
+
+authors = [
+    { name = "Matteo Mosangini", email = "mosangini.matteo@liceocopernico.org" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/liceocopernico/labintfactory_project"
+Issues = "https://github.com/liceocopernico/labintfactory_project/issues"
