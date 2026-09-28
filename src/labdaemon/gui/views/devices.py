@@ -277,6 +277,8 @@ class DeviceDetail(QWidget):
         self.plot.showGrid(x=True, y=True, alpha=0.25)
         self.plot.setLabel("bottom", self.tr("seconds ago"))
         self.plot.getPlotItem().getViewBox().setMouseEnabled(x=False, y=False)
+        for axis in ("left", "bottom"):
+            self.plot.getAxis(axis).enableAutoSIPrefix(False)
         self.curve = self.plot.plot([], [])
         live_card.body.addWidget(self.plot, 1)
         body.addWidget(live_card, 1)

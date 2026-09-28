@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("LabDaemon")
         self.resize(1200, 780)
 
-        self.experiments = ExperimentsView()
+        self.experiments = ExperimentsView(registry, manager, bridge, settings)
         self.devices = DevicesView(manager, bridge)
         self.plugins = PluginsView(registry, manager, settings.paths.user_plugins)
         self.settings_view = SettingsView(settings, app_theme)
@@ -126,5 +126,8 @@ class MainWindow(QMainWindow):
             chip.set_board(board.name, link_label(board.address.link), worst)
 
     def closeEvent(self, event) -> None:
+        if not self.experiments.close_all():
+            event.ignore()
+            return
         self.manager.shutdown()
         super().closeEvent(event)

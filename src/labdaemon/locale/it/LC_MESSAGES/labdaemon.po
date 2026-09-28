@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LabDaemon VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-28 20:54+0200\n"
+"POT-Creation-Date: 2026-09-28 21:15+0200\n"
 "PO-Revision-Date: 2026-09-28 20:13+0200\n"
 "Last-Translator: Matteo Mosangini\n"
 "Language: it\n"
@@ -21,8 +21,39 @@ msgstr ""
 msgid "A limit was reached."
 msgstr "È stato raggiunto un limite."
 
+msgid "A sample of unknown concentration, measured against the calibration."
+msgstr "Un campione di concentrazione incognita, misurato con la taratura."
+
+msgid "A solution of known concentration."
+msgstr "Una soluzione di concentrazione nota."
+
+msgid "A standard needs a concentration above zero: the blank is the zero point."
+msgstr "Uno standard deve avere concentrazione maggiore di zero: il bianco è il punto zero."
+
+msgid "Absorbance"
+msgstr "Assorbanza"
+
+msgid "Absorbance and concentration"
+msgstr "Assorbanza e concentrazione"
+
+msgid "Absorptivity"
+msgstr "Assorbività"
+
 msgid "Analog gain"
 msgstr "Guadagno analogico"
+
+msgid "At least one point away from zero is needed for a line through the origin."
+msgstr "Per una retta passante per l'origine serve almeno un punto diverso da zero."
+
+msgid "At least two points with different values are needed for a line."
+msgstr "Per una retta servono almeno due punti con valori diversi."
+
+msgid "Blank"
+msgstr "Bianco"
+
+#, python-brace-format
+msgid "Blank: I₀ = {lux:.1f} lx"
+msgstr "Bianco: I₀ = {lux:.1f} lx"
 
 msgid "Bluetooth"
 msgstr "Bluetooth"
@@ -30,9 +61,31 @@ msgstr "Bluetooth"
 msgid "Busy"
 msgstr "Occupato"
 
+msgid "Calibrate with standard solutions, then find the concentration of an unknown sample (Beer–Lambert)."
+msgstr "Taratura con soluzioni standard, poi la concentrazione di un campione incognito (Lambert-Beer)."
+
+msgid "Calibration"
+msgstr "Taratura"
+
+msgid "Calibration line"
+msgstr "Retta di taratura"
+
 #, python-brace-format
 msgid "Cannot open {port}."
 msgstr "Impossibile aprire {port}."
+
+#, python-brace-format
+msgid "Choose a device for: {role}."
+msgstr "Scegli un dispositivo per: {role}."
+
+msgid "Choose the photometer. It provides both the light sensor and the light source."
+msgstr "Scegli il fotometro: fornisce sia il sensore di luce sia la sorgente luminosa."
+
+msgid "Concentration"
+msgstr "Concentrazione"
+
+msgid "Concentration unit"
+msgstr "Unità di concentrazione"
 
 msgid "Connecting"
 msgstr "Connessione in corso"
@@ -40,17 +93,39 @@ msgstr "Connessione in corso"
 msgid "Connection lost"
 msgstr "Connessione persa"
 
+msgid "Cuvette path length"
+msgstr "Cammino ottico della cuvetta"
+
+msgid "Devices"
+msgstr "Dispositivi"
+
 msgid "Disconnected"
 msgstr "Disconnesso"
 
 msgid "Drive level of the LED, 0 = off."
 msgstr "Livello di pilotaggio del LED, 0 = spento."
 
+msgid "Each measurement is the mean of this many sensor readings."
+msgstr "Ogni misura è la media di questo numero di letture del sensore."
+
 msgid "Each value is the mean of this many conversions."
 msgstr "Ogni valore è la media di questo numero di conversioni."
 
 msgid "Error"
 msgstr "Errore"
+
+msgid ""
+"Fill a clean cuvette with the solvent (usually distilled water), dry the outside, and insert it with the "
+"clear faces towards the light."
+msgstr ""
+"Riempi una cuvetta pulita con il solvente (di solito acqua distillata), asciugala all'esterno e inseriscila"
+" con le facce trasparenti verso la luce."
+
+msgid "Fill the cuvette with the unknown solution, type a name for it, and press Measure."
+msgstr "Riempi la cuvetta con la soluzione incognita, scrivi un nome e premi Misura."
+
+msgid "Force the line through the origin"
+msgstr "Retta passante per l'origine"
 
 msgid "Full scale"
 msgstr "Fondo scala"
@@ -67,11 +142,23 @@ msgstr "Infrarosso"
 msgid "Integration time"
 msgstr "Tempo di integrazione"
 
+msgid "Keep this calibration to reuse it on another day."
+msgstr "Conserva questa taratura per riusarla un altro giorno."
+
 msgid "LED colour"
 msgstr "Colore del LED"
 
 msgid "LED power"
 msgstr "Potenza del LED"
+
+msgid "Light sensor"
+msgstr "Sensore di luce"
+
+msgid "Light setup"
+msgstr "Impostazione della luce"
+
+msgid "Light source"
+msgstr "Sorgente luminosa"
 
 #, python-brace-format
 msgid "Lost the connection on {port}."
@@ -82,6 +169,41 @@ msgstr "La scheda ha inviato una risposta di errore malformata."
 
 msgid "Malformed line from the board (unbalanced quotes)."
 msgstr "La scheda ha inviato una riga malformata (virgolette non bilanciate)."
+
+msgid "Measure"
+msgstr "Misura"
+
+msgid "Measure at least two standards first."
+msgstr "Misura prima almeno due standard."
+
+msgid "Measure blank"
+msgstr "Misura il bianco"
+
+msgid "Measure standard"
+msgstr "Misura lo standard"
+
+msgid "Measure the blank"
+msgstr "Misura il bianco"
+
+msgid "Measure the blank first."
+msgstr "Misura prima il bianco."
+
+msgid "Measure unknown"
+msgstr "Misura l'incognito"
+
+msgid "Molar absorptivity ε"
+msgstr "Coefficiente di assorbimento molare ε"
+
+msgid "No calibration library is available."
+msgstr "Nessuna raccolta di tarature disponibile."
+
+msgid "No light reached the sensor through the sample. Raise the LED power, or dilute the sample."
+msgstr ""
+"Nessuna luce ha raggiunto il sensore attraverso il campione. Aumenta la potenza del LED o diluisci il "
+"campione."
+
+msgid "No light reaches the sensor. Turn the LED on, or raise its power."
+msgstr "Nessuna luce raggiunge il sensore. Accendi il LED o aumentane la potenza."
 
 #, python-brace-format
 msgid "No simulated device is available for {plugin}."
@@ -105,8 +227,14 @@ msgstr "Permesso negato su {port}. Chiudi gli altri programmi che la usano."
 msgid "Photometer (TSL2591 + LED)"
 msgstr "Fotometro (TSL2591 + LED)"
 
+msgid "Prepare the blank"
+msgstr "Prepara il bianco"
+
 msgid "Read settings from device"
 msgstr "Leggi le impostazioni dal dispositivo"
+
+msgid "Readings per measurement"
+msgstr "Letture per misura"
 
 msgid "Readings per value"
 msgstr "Letture per valore"
@@ -114,14 +242,64 @@ msgstr "Letture per valore"
 msgid "Ready"
 msgstr "Pronto"
 
+msgid "Remove standard"
+msgstr "Rimuovi lo standard"
+
+msgid "Resolution"
+msgstr "Risoluzione"
+
+msgid "Results"
+msgstr "Risultati"
+
+msgid ""
+"Rinse the cuvette with the next standard, fill it and insert it. Type its concentration, then press "
+"Measure. At least 3 standards; 5 are better."
+msgstr ""
+"Sciacqua la cuvetta con lo standard successivo, riempila e inseriscila. Scrivi la concentrazione, poi premi"
+" Misura. Almeno 3 standard; meglio 5."
+
+msgid "Sample"
+msgstr "Campione"
+
+msgid "Sample name"
+msgstr "Nome del campione"
+
+msgid "Saturates at about"
+msgstr "Satura a circa"
+
+msgid "Save calibration"
+msgstr "Salva la taratura"
+
+msgid ""
+"Save the session to keep the data. Save the calibration to reuse it on another day with the same LED and "
+"settings."
+msgstr ""
+"Salva la sessione per conservare i dati. Salva la taratura per riusarla un altro giorno con lo stesso LED e"
+" le stesse impostazioni."
+
 msgid "Settings read from the board."
 msgstr "Impostazioni lette dalla scheda."
+
+msgid "Solution"
+msgstr "Soluzione"
+
+msgid "Standard solutions"
+msgstr "Soluzioni standard"
+
+msgid "Standards"
+msgstr "Standard"
 
 msgid "Stopped."
 msgstr "Interrotto."
 
 msgid "That device is not connected."
 msgstr "Quel dispositivo non è collegato."
+
+msgid "The blank is the zero of the scale: every absorbance is measured against it."
+msgstr "Il bianco è lo zero della scala: ogni assorbanza è misurata rispetto a esso."
+
+msgid "The blank stays in the table. Measure it again to replace it."
+msgstr "Il bianco resta nella tabella. Misuralo di nuovo per sostituirlo."
 
 msgid "The board reports no functions."
 msgstr "La scheda non dichiara alcuna funzione."
@@ -140,17 +318,44 @@ msgstr "La risposta della scheda a ID? è incompleta."
 msgid "The board's reply lacks {key!r}."
 msgstr "Nella risposta della scheda manca {key!r}."
 
+msgid "The calibration line appears after the blank and one standard."
+msgstr "La retta di taratura compare dopo il bianco e uno standard."
+
+msgid "The calibration line is flat: it cannot give a concentration."
+msgstr "La retta di taratura è piatta: non può dare una concentrazione."
+
 msgid "The colour of the LED fitted in the photometer. It sets the allowed power."
 msgstr "Il colore del LED montato nel fotometro. Determina la potenza consentita."
 
 msgid "The connection to the board is closed."
 msgstr "La connessione con la scheda è chiusa."
 
+msgid "The reference (blank) reading has no light. Raise the LED power and measure the blank again."
+msgstr "La lettura di riferimento (bianco) non ha luce. Aumenta la potenza del LED e misura di nuovo il bianco."
+
+msgid "The sensor is saturated: lower the LED power (or the gain) and measure again."
+msgstr "Il sensore è saturo: riduci la potenza del LED (o il guadagno) e misura di nuovo."
+
+msgid "The sensor is saturated: lower the LED power."
+msgstr "Il sensore è saturo: riduci la potenza del LED."
+
+msgid "The solvent alone: the zero of the absorbance scale."
+msgstr "Il solo solvente: lo zero della scala di assorbanza."
+
 msgid "This setting is fixed by your administrator."
 msgstr "Questa impostazione è stabilita dall'amministratore."
 
+msgid "Too little light: turn the LED on or raise its power."
+msgstr "Troppo poca luce: accendi il LED o aumentane la potenza."
+
+msgid "Transmittance"
+msgstr "Trasmittanza"
+
 msgid "USB"
 msgstr "USB"
+
+msgid "Uncertainty"
+msgstr "Incertezza"
 
 msgid "Unexpected line from the board."
 msgstr "Riga inattesa dalla scheda."
@@ -159,12 +364,31 @@ msgstr "Riga inattesa dalla scheda."
 msgid "Unknown command: {key}"
 msgstr "Comando sconosciuto: {key}"
 
+msgid "Unknown sample"
+msgstr "Campione incognito"
+
+msgid "Unknown samples"
+msgstr "Campioni incogniti"
+
 #, python-brace-format
 msgid "Unknown setting: {key}"
 msgstr "Impostazione sconosciuta: {key}"
 
+msgid "Waiting for a reading…"
+msgstr "In attesa di una lettura…"
+
+msgid "What you are measuring, e.g. copper sulfate. Used to name files and calibrations."
+msgstr "Che cosa stai misurando, per esempio solfato di rame. Serve a dare il nome a file e tarature."
+
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
+
+msgid ""
+"With the cuvette holder empty, choose the fitted LED and a power that gives a strong reading without "
+"saturating the sensor."
+msgstr ""
+"Con il portacuvette vuoto, scegli il LED montato e una potenza che dia una lettura alta senza saturare il "
+"sensore."
 
 msgid "blue"
 msgstr "blu"
@@ -178,6 +402,9 @@ msgstr "errore {code}"
 
 msgid "green"
 msgstr "verde"
+
+msgid "lx per count"
+msgstr "lx per conteggio"
 
 msgid "no answer to PING"
 msgstr "nessuna risposta a PING"
@@ -220,12 +447,28 @@ msgid "{label}: {value} is outside {minimum}–{maximum}{unit}."
 msgstr "{label}: {value} è fuori dall'intervallo {minimum}–{maximum}{unit}."
 
 #, python-brace-format
+msgid "{name} is damaged or not a LabDaemon session."
+msgstr "{name} è danneggiato o non è una sessione LabDaemon."
+
+#, python-brace-format
+msgid "{name} is not a LabDaemon session."
+msgstr "{name} non è una sessione LabDaemon."
+
+#, python-brace-format
+msgid "{name} was saved by a newer LabDaemon. Update LabDaemon to open it."
+msgstr "{name} è stato salvato da un LabDaemon più recente. Aggiorna LabDaemon per aprirlo."
+
+#, python-brace-format
 msgid "{port} is in use by another program."
 msgstr "{port} è in uso da un altro programma."
 
 #, python-brace-format
 msgid "{port} is not there any more. Is the board plugged in?"
 msgstr "{port} non è più presente. La scheda è collegata?"
+
+#, python-brace-format
+msgid "{sample}: c = {c}"
+msgstr "{sample}: c = {c}"
 
 #, python-brace-format
 msgid "{target} does not answer. Is it a LabDaemon board with LabInt firmware?"

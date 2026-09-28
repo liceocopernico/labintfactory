@@ -246,6 +246,10 @@ class DeviceManager:
     def device_keys(self) -> list[str]:
         return [d.key for b in self.boards() for d in b.devices.values()]
 
+    def devices_providing(self, capability: type) -> list[str]:
+        """Connected devices whose plugin provides a capability (candidates for an experiment role)."""
+        return [d.key for b in self.boards() for d in b.devices.values() if d.provides(capability)]
+
     def state(self, key: str) -> DeviceState:
         return self._states.get(key, DeviceState.DISCONNECTED)
 

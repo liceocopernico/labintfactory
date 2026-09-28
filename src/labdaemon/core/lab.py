@@ -53,6 +53,15 @@ class Lab:
         """Connect the board on a USB serial port, e.g. lab.connect("COM3") or lab.connect("/dev/ttyACM0")."""
         return LabBoard(self.manager, self.manager.connect_serial(port))
 
+    def experiment(self, experiment_id: str, **devices):
+        """An experiment with devices for its roles, e.g. lab.experiment("absorbance", sensor=photo, source=photo)."""
+        from labdaemon.core.calibration import CalibrationLibrary
+
+        cls = self.registry.experiment(experiment_id)
+        if cls is None:
+            raise KeyError(f"no experiment plugin {experiment_id!r}")
+        return cls(devices, calibrations=CalibrationLibrary(self.settings.paths.data_dir / "calibrations"))
+
     def boards(self) -> list[LabBoard]:
         return [LabBoard(self.manager, b) for b in self.manager.boards()]
 

@@ -1,6 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="it_IT">
 <context>
+    <name>ActionPage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="164" />
+        <source>Measuring…</source>
+        <translation>Misura in corso…</translation>
+    </message>
+</context>
+<context>
     <name>AddDeviceDialog</name>
     <message>
         <location filename="../views/add_device.py" line="34" />
@@ -127,19 +135,27 @@
         <translation>secondi fa</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="285" />
+        <location filename="../views/devices.py" line="287" />
         <source>Commands</source>
         <translation>Comandi</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="303" />
+        <location filename="../views/devices.py" line="305" />
         <source>board {board} · {link} · serial {serial} · firmware {fw} · protocol {proto}</source>
         <translation>scheda {board} · {link} · numero di serie {serial} · firmware {fw} · protocollo {proto}</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="351" />
+        <location filename="../views/devices.py" line="353" />
         <source>The sensor is saturated: lower the LED power or the gain.</source>
         <translation>Il sensore è saturo: riduci la potenza del LED o il guadagno.</translation>
+    </message>
+</context>
+<context>
+    <name>DevicesPage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="64" />
+        <source>Devices for this experiment</source>
+        <translation>Dispositivi per questo esperimento</translation>
     </message>
 </context>
 <context>
@@ -187,16 +203,234 @@ Collega una scheda, oppure aggiungi un dispositivo simulato per provare LabDaemo
     </message>
 </context>
 <context>
+    <name>ExperimentCard</name>
+    <message>
+        <location filename="../views/experiments.py" line="53" />
+        <source>Open</source>
+        <translation>Apri</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="70" />
+        <source>not connected</source>
+        <translation>non collegato</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="77" />
+        <source>opens in expert mode</source>
+        <translation>si apre in modalità esperta</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="77" />
+        <source>opens guided</source>
+        <translation>si apre guidato</translation>
+    </message>
+</context>
+<context>
+    <name>ExperimentHost</name>
+    <message>
+        <location filename="../experiment/host.py" line="117" />
+        <source>Guided</source>
+        <translation>Guidata</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="117" />
+        <source>Expert</source>
+        <translation>Esperta</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="124" />
+        <source>Save session…</source>
+        <translation>Salva la sessione…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="126" />
+        <source>Close</source>
+        <translation>Chiudi</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="225" />
+        <source>untitled</source>
+        <translation>senza titolo</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="245" />
+        <location filename="../experiment/host.py" line="253" />
+        <source>Save session</source>
+        <translation>Salva la sessione</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="246" />
+        <source>LabDaemon sessions (*.labint)</source>
+        <translation>Sessioni LabDaemon (*.labint)</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="253" />
+        <source>Could not save: {0}</source>
+        <translation>Salvataggio non riuscito: {0}</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="259" />
+        <source>Saved {0}</source>
+        <translation>Salvato {0}</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="265" />
+        <source>Save the session before closing?</source>
+        <translation>Salvare la sessione prima di chiudere?</translation>
+    </message>
+</context>
+<context>
     <name>ExperimentsView</name>
     <message>
-        <location filename="../views/experiments.py" line="13" />
+        <location filename="../views/experiments.py" line="97" />
         <source>Experiments</source>
         <translation>Esperimenti</translation>
     </message>
     <message>
-        <location filename="../views/experiments.py" line="14" />
+        <location filename="../views/experiments.py" line="98" />
+        <source>Choose an experiment. Its devices are checked for you.</source>
+        <translation>Scegli un esperimento. I suoi dispositivi vengono controllati per te.</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="99" />
+        <source>Open session…</source>
+        <translation>Apri una sessione…</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="103" />
         <source>No experiment plugins are installed yet. You can already connect devices and watch their readings in Devices.</source>
         <translation>Non è ancora installato alcun plugin di esperimenti. Puoi già collegare i dispositivi e osservarne le letture in Dispositivi.</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="115" />
+        <source>All experiments</source>
+        <translation>Tutti gli esperimenti</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="123" />
+        <source>Chemistry</source>
+        <translation>Chimica</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="123" />
+        <source>Physics</source>
+        <translation>Fisica</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="123" />
+        <source>General</source>
+        <translation>Generale</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="159" />
+        <location filename="../views/experiments.py" line="167" />
+        <location filename="../views/experiments.py" line="171" />
+        <source>Open session</source>
+        <translation>Apri una sessione</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="160" />
+        <source>LabDaemon sessions (*.labint)</source>
+        <translation>Sessioni LabDaemon (*.labint)</translation>
+    </message>
+    <message>
+        <location filename="../views/experiments.py" line="172" />
+        <source>This session needs the experiment plugin “{0}”, which is not installed.</source>
+        <translation>Questa sessione richiede il plugin di esperimento “{0}”, che non è installato.</translation>
+    </message>
+</context>
+<context>
+    <name>ExpertView</name>
+    <message>
+        <location filename="../experiment/expert.py" line="46" />
+        <source>Devices</source>
+        <translation>Dispositivi</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="51" />
+        <source>Settings</source>
+        <translation>Impostazioni</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="59" />
+        <source>Measurements</source>
+        <translation>Misure</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="67" />
+        <source>Use a saved calibration…</source>
+        <translation>Usa una taratura salvata…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="79" />
+        <source>Graph</source>
+        <translation>Grafico</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="91" />
+        <source>Data</source>
+        <translation>Dati</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="137" />
+        <source>Select a row in the data table first.</source>
+        <translation>Seleziona prima una riga nella tabella dei dati.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="148" />
+        <source>{0}: type a number.</source>
+        <translation>{0}: scrivi un numero.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="153" />
+        <source>Measuring…</source>
+        <translation>Misura in corso…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="191" />
+        <source>No saved calibrations yet.</source>
+        <translation>Non ci sono ancora tarature salvate.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="194" />
+        <source>Use a saved calibration</source>
+        <translation>Usa una taratura salvata</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="194" />
+        <source>Calibration</source>
+        <translation>Taratura</translation>
+    </message>
+    <message>
+        <location filename="../experiment/expert.py" line="200" />
+        <source>Calibration “{0}” loaded. Measure the blank again before the unknowns.</source>
+        <translation>Taratura “{0}” caricata. Misura di nuovo il bianco prima degli incogniti.</translation>
+    </message>
+</context>
+<context>
+    <name>GuidedView</name>
+    <message>
+        <location filename="../experiment/guided.py" line="353" />
+        <source>← Back</source>
+        <translation>← Indietro</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="356" />
+        <source>Next →</source>
+        <translation>Avanti →</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="408" />
+        <source>Step {0} of {1}</source>
+        <translation>Passo {0} di {1}</translation>
+    </message>
+</context>
+<context>
+    <name>InstructionPage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="144" />
+        <source>When you are ready, press Next.</source>
+        <translation>Quando sei pronto, premi Avanti.</translation>
     </message>
 </context>
 <context>
@@ -228,6 +462,29 @@ Collega una scheda, oppure aggiungi un dispositivo simulato per provare LabDaemo
         <location filename="../widgets/parameter_form.py" line="48" />
         <source>(advanced)</source>
         <translation>(avanzato)</translation>
+    </message>
+</context>
+<context>
+    <name>ParametersPage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="79" />
+        <source>Settings</source>
+        <translation>Impostazioni</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="88" />
+        <source>Live reading</source>
+        <translation>Lettura in tempo reale</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="122" />
+        <source>{0} counts full spectrum, {1} infrared</source>
+        <translation>{0} conteggi spettro completo, {1} infrarosso</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="125" />
+        <source>Good: a strong reading, below saturation.</source>
+        <translation>Bene: una lettura alta, sotto la saturazione.</translation>
     </message>
 </context>
 <context>
@@ -339,6 +596,62 @@ Collega una scheda, oppure aggiungi un dispositivo simulato per provare LabDaemo
     </message>
 </context>
 <context>
+    <name>ResultPage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="282" />
+        <source>Results</source>
+        <translation>Risultati</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="287" />
+        <source>Save session…</source>
+        <translation>Salva la sessione…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="291" />
+        <source>Save calibration…</source>
+        <translation>Salva la taratura…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="296" />
+        <source>Next time, open this experiment in expert mode</source>
+        <translation>La prossima volta, apri questo esperimento in modalità esperta</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="316" />
+        <source>Save calibration</source>
+        <translation>Salva la taratura</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="316" />
+        <source>Name</source>
+        <translation>Nome</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="321" />
+        <source>Calibration saved: {0}</source>
+        <translation>Taratura salvata: {0}</translation>
+    </message>
+</context>
+<context>
+    <name>RoleSelector</name>
+    <message>
+        <location filename="../experiment/host.py" line="71" />
+        <source>Add device…</source>
+        <translation>Aggiungi dispositivo…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="83" />
+        <source>— choose —</source>
+        <translation>— scegli —</translation>
+    </message>
+    <message>
+        <location filename="../experiment/host.py" line="83" />
+        <source>No suitable device connected</source>
+        <translation>Nessun dispositivo adatto collegato</translation>
+    </message>
+</context>
+<context>
     <name>SettingsView</name>
     <message>
         <location filename="../views/settings.py" line="19" />
@@ -404,6 +717,74 @@ Collega una scheda, oppure aggiungi un dispositivo simulato per provare LabDaemo
         <location filename="../views/settings.py" line="68" />
         <source>Set by your administrator.</source>
         <translation>Stabilito dall'amministratore.</translation>
+    </message>
+</context>
+<context>
+    <name>TablePage</name>
+    <message>
+        <location filename="../experiment/guided.py" line="181" />
+        <source>Measure</source>
+        <translation>Misura</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="188" />
+        <source>Use a saved calibration…</source>
+        <translation>Usa una taratura salvata…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="193" />
+        <source>Measurements</source>
+        <translation>Misure</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="197" />
+        <source>Remove selected row</source>
+        <translation>Rimuovi la riga selezionata</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="202" />
+        <source>Graph</source>
+        <translation>Grafico</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="226" />
+        <source>Type a number, for example 0.02.</source>
+        <translation>Scrivi un numero, per esempio 0,02.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="231" />
+        <source>Measuring…</source>
+        <translation>Misura in corso…</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="249" />
+        <source>Select a row first.</source>
+        <translation>Seleziona prima una riga.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="258" />
+        <source>No saved calibrations yet.</source>
+        <translation>Non ci sono ancora tarature salvate.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="261" />
+        <source>Use a saved calibration</source>
+        <translation>Usa una taratura salvata</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="261" />
+        <source>Calibration</source>
+        <translation>Taratura</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="268" />
+        <source>Calibration “{0}” loaded. Measure the blank again before the unknowns.</source>
+        <translation>Taratura “{0}” caricata. Misura di nuovo il bianco prima degli incogniti.</translation>
+    </message>
+    <message>
+        <location filename="../experiment/guided.py" line="271" />
+        <source>Settings restored to the calibration's: {0}.</source>
+        <translation>Impostazioni riportate a quelle della taratura: {0}.</translation>
     </message>
 </context>
 </TS>

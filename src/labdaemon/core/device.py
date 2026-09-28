@@ -4,15 +4,18 @@ Every method here runs on the board's worker thread (core.worker), so plugin cod
 blocking Python and never needs locks of its own.
 """
 
+import sys
 from abc import ABC
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from labdaemon.core.board import BoardInfo
 from labdaemon.core.data import Channel
 from labdaemon.core.errors import ParameterError
+from labdaemon.core.hardware import HardwareSheet, OperatingValue, load_sheet
 from labdaemon.core.i18n import N_, _
 from labdaemon.core.parameters import Parameter, ParameterSet
 
@@ -59,6 +62,7 @@ class Device(ABC):
     links: ClassVar[frozenset[str]] = frozenset({"serial", "tcp", "ble", "simulated"})
     simulated: ClassVar[Callable[[], WireSimulator] | None] = None  # builds a simulated board
     gui: ClassVar[str | None] = None  # "pkg.module:Panel", imported only by the GUI
+    hardware: ClassVar[str | None] = None  # hardware sheet, relative to the plugin's module (design §7.4)
     # Extra firmware checks for `labdaemon firmware check`: (channel) -> [Check, …]
     firmware_checks: ClassVar[Callable[[FunctionChannel], list[Check]] | None] = None
     api: ClassVar[int] = 1
@@ -115,6 +119,17 @@ class Device(ABC):
     def poll(self) -> dict[str, float] | None:
         """Live values for monitoring (channel key → value), or None if the device has none."""
         return None
+
+    def operating_point(self) -> list[OperatingValue]:
+        """Live figures for the Hardware tab, computed from the settings and the last reading."""
+        return []
+
+    @classmethod
+    def hardware_sheet(cls) -> HardwareSheet | None:
+        if not cls.hardware:
+            return None
+        module = sys.modules[cls.__module__]
+        return load_sheet(Path(module.__file__).resolve().parent / cls.hardware)
 
     # ── helpers ──
     @property

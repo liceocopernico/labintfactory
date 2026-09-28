@@ -1,21 +1,24 @@
-"""TSL2591 figures and the lux calculation.
+"""TSL2591 figures and the lux calculation. The figures come from the plugin's hardware sheet."""
 
-In M1 these figures move into the plugin's hardware sheet (hardware/hardware.toml, design §7.4),
-which the GUI shows and this code reads.
-"""
+from pathlib import Path
 
-INTEGRATION_MS = (100, 200, 300, 400, 500, 600)
-GAINS = (1, 25, 428, 9876)  # nominal factors: low, medium, high, max
-LUX_DF = 408.0  # device factor used by the lux formula
+from labdaemon.core.hardware import HardwareSheet, load_sheet
 
-# Full-scale counts per channel. At 100 ms the ADC tops out lower than at longer integration times
-# (value from Adafruit's TSL2591 driver; to be confirmed against the ams datasheet in M1).
-FULL_SCALE_100MS = 36863
-FULL_SCALE = 65535
+SHEET_PATH = Path(__file__).resolve().parent / "hardware" / "hardware.toml"
+
+
+def sheet() -> HardwareSheet:
+    return load_sheet(SHEET_PATH)
+
+
+INTEGRATION_MS = tuple(sheet().spec("tsl2591", "integration_ms"))
+GAINS = tuple(sheet().spec("tsl2591", "gains"))
+LUX_DF = float(sheet().spec("tsl2591", "lux_df"))
 
 
 def full_scale_counts(integration_ms: int) -> int:
-    return FULL_SCALE_100MS if integration_ms <= 100 else FULL_SCALE
+    table = sheet().spec("tsl2591", "full_scale_counts")
+    return int(table.get(str(integration_ms), table["default"]))
 
 
 def counts_per_lux(integration_ms: int, gain: int) -> float:

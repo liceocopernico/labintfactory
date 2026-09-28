@@ -46,6 +46,9 @@ simulated = "labdaemon.transports.simulated:SimulatedTransport"
 [project.entry-points."labdaemon.devices"]
 tsl2591_photometer = "labdaemon.devices.tsl2591:Tsl2591Photometer"
 
+[project.entry-points."labdaemon.experiments"]
+absorbance = "labdaemon.experiments.absorbance:Absorbance"
+
 [dependency-groups]
 dev = [
     "pytest>=8.3",

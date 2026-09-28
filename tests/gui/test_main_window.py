@@ -4,7 +4,8 @@ from labdaemon.core import i18n
 from labdaemon.gui.app import install_translations
 from labdaemon.gui.bridge import QtBridge
 from labdaemon.gui.main_window import MainWindow
-from labdaemon.gui.views.experiments import ExperimentsView
+from labdaemon.gui.views.settings import SettingsView
+from labdaemon.gui.widgets.components import PageHeader
 
 
 @pytest.fixture
@@ -43,13 +44,13 @@ def test_editing_a_setting_reaches_the_device(qtbot, window, manager):
     qtbot.waitUntil(lambda: "outside" in window.devices.detail.message.text(), timeout=3000)
 
 
-def test_italian_interface(qtbot, qapp):
+def test_italian_interface(qtbot, qapp, settings):
     translators = install_translations(qapp, "it")
     try:
         assert translators, "labdaemon_it.qm not found"
-        view = ExperimentsView()
+        view = SettingsView(settings)
         qtbot.addWidget(view)
-        assert "Non è ancora installato" in view.message.text()
+        assert view.findChild(PageHeader).title.text() == "Impostazioni"
     finally:
         for t in translators:
             qapp.removeTranslator(t)

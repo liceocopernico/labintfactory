@@ -76,6 +76,12 @@ class Registry:
     def transports(self) -> dict[str, type[Transport]]:
         return {r.id: r.obj for r in self._active("transport")}
 
+    def experiments(self) -> dict[str, type]:
+        return {r.id: r.obj for r in self._active("experiment")}
+
+    def experiment(self, plugin_id: str) -> type | None:
+        return self.experiments().get(plugin_id)
+
     def device(self, plugin_id: str) -> type[Device] | None:
         return self.devices().get(plugin_id)
 
@@ -177,6 +183,19 @@ def _validate(name: str, kind: str, obj: object) -> None:
                    if any(not callable(getattr(obj, m, None)) for m in _protocol_methods(c))]
         if missing:
             raise TypeError(f"{obj.__name__} declares but does not implement: {', '.join(missing)}")
+    elif kind == "experiment":
+        from labdaemon.core.experiment import Experiment, Requirement
+
+        if not (isinstance(obj, type) and issubclass(obj, Experiment)):
+            raise TypeError(f"{obj!r} is not an Experiment subclass")
+        for attr in ("id", "name"):
+            if not hasattr(obj, attr):
+                raise TypeError(f"{obj.__name__} lacks the class attribute {attr!r}")
+        if obj.id != name:
+            raise TypeError(f"{obj.__name__}.id is {obj.id!r} but it is registered as {name!r}")
+        for role, req in obj.requires.items():
+            if not isinstance(req, Requirement) or req.capability not in KNOWN_CAPABILITIES:
+                raise TypeError(f"requirement {role!r} does not name a known capability")
     elif kind == "transport":
         if not (isinstance(obj, type) and issubclass(obj, Transport)):
             raise TypeError(f"{obj!r} is not a Transport subclass")

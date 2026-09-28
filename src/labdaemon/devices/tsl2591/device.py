@@ -8,6 +8,7 @@ from labdaemon.core.capabilities import LightReading, LightSensor, LightSource, 
 from labdaemon.core.data import Channel
 from labdaemon.core.device import Command, Device
 from labdaemon.core.errors import LabError
+from labdaemon.core.hardware import OperatingValue
 from labdaemon.core.i18n import N_, _
 from labdaemon.core.parameters import Parameter
 from labdaemon.devices.tsl2591 import lux as tsl
@@ -16,9 +17,8 @@ from labdaemon.devices.tsl2591.simulated import COLORS, simulated_board
 # LED colour names are shown translated in forms
 COLOR_NAMES = (N_("red"), N_("orange"), N_("green"), N_("blue"))
 
-# Highest drive level (DAC, 0–4095) per LED colour, from the photometer's original firmware limits.
-# In M1 these move to the hardware sheet with the rest of the photometer's figures.
-LED_MAX = {"red": 4000, "orange": 850, "green": 900, "blue": 850}
+# Highest drive level (DAC, 0–4095) per LED colour, from the hardware sheet.
+LED_MAX = dict(tsl.sheet().spec("led", "max_power"))
 
 
 class Tsl2591Photometer(Device):
@@ -29,6 +29,8 @@ class Tsl2591Photometer(Device):
     models = frozenset({"photometer"})
     capabilities = frozenset({LightSensor, LightSource, Sensor})
     simulated = staticmethod(simulated_board)
+    hardware = "hardware/hardware.toml"
+    _last: LightReading | None = None
 
     # ── settings ──
     def parameters(self, values: Mapping[str, Any]) -> list[Parameter]:
@@ -81,8 +83,28 @@ class Tsl2591Photometer(Device):
         r = self.wire.run("READ", n, timeout=n * (2 * t / 1000 + 0.25) + 1.0)
         ch0, ch1 = r.int("bb"), r.int("ir")
         full = tsl.full_scale_counts(t)
-        return LightReading(lux=tsl.lux(ch0, ch1, t, g), broadband=ch0, infrared=ch1,
-                            saturated=r.bool("sat", False) or max(ch0, ch1) >= full)
+        self._last = LightReading(lux=tsl.lux(ch0, ch1, t, g), broadband=ch0, infrared=ch1,
+                                  saturated=r.bool("sat", False) or max(ch0, ch1) >= full)
+        return self._last
+
+    def operating_point(self) -> list[OperatingValue]:
+        t, g = self.params["integration_time"], self.params["gain"]
+        full = tsl.full_scale_counts(t)
+        r = self._last
+        if r is None:
+            return []
+        values = []
+        for key, label, counts in (("ch0", N_("Full spectrum"), r.broadband), ("ch1", N_("Infrared"), r.infrared)):
+            fraction = counts / full
+            values.append(OperatingValue(key, label, counts, N_("counts"), fraction,
+                                         "err" if fraction >= 1 else "warn" if fraction > 0.8 else "ok"))
+        per_count = r.lux / r.broadband if r.broadband else 1 / tsl.counts_per_lux(t, g)
+        values.append(OperatingValue("resolution", N_("Resolution"), per_count, N_("lx per count")))
+        if r.broadband:
+            saturation = r.lux * full / max(r.broadband, r.infrared)
+            values.append(OperatingValue("saturation", N_("Saturates at about"), saturation, "lx",
+                                         tone="err" if r.saturated else "ok"))
+        return values
 
     # ── LightSource ──
     def colors(self) -> list[str]:
