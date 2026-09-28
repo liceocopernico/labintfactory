@@ -1,7 +1,7 @@
 """Plugins view: what was found, where it came from, and why a plugin did not load."""
 
 from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QDesktopServices
+from PySide6.QtGui import QColor, QDesktopServices
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
 from labdaemon.core.i18n import _
 from labdaemon.core.manager import DeviceManager
 from labdaemon.core.registry import Registry, Status
+from labdaemon.gui import theme
+from labdaemon.gui.widgets.components import PageHeader, muted
 
 
 class PluginsView(QWidget):
@@ -27,10 +29,7 @@ class PluginsView(QWidget):
         self.user_plugins_dir = user_plugins_dir
         v = QVBoxLayout(self)
         head = QHBoxLayout()
-        title = QLabel(self.tr("Plugins"))
-        title.setStyleSheet("font-weight:600; font-size:15pt;")
-        head.addWidget(title)
-        head.addStretch()
+        head.addWidget(PageHeader(self.tr("Plugins")), 1)
         open_folder = QPushButton(self.tr("Open plugin folder"))
         open_folder.clicked.connect(self._open_folder)
         self.reload = QPushButton(self.tr("Reload plugins"))
@@ -48,11 +47,11 @@ class PluginsView(QWidget):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         v.addWidget(self.table, 1)
-        self.folders = QLabel()
+        self.folders = muted(QLabel())
         self.folders.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         self.folders.setWordWrap(True)
         v.addWidget(self.folders)
-        self.refresh()
+        theme.on_change(self.refresh)
 
     def refresh(self) -> None:
         records = self.registry.records()
@@ -72,7 +71,7 @@ class PluginsView(QWidget):
                 item = QTableWidgetItem(text)
                 if col == 5 and r.error:
                     item.setToolTip(r.error)
-                    item.setForeground(Qt.GlobalColor.red)
+                    item.setForeground(QColor(theme.tokens().err))
                 self.table.setItem(row, col, item)
         self.table.resizeColumnsToContents()
         dirs = "\n".join(str(d) for d in self.registry.plugin_dirs)

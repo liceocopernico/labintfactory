@@ -14,11 +14,11 @@ PATHS = {
 }
 
 
-def icon(name: str, color: QColor, size: int = 22) -> QIcon:
+def _pixmaps(name: str, color: QColor, size: int) -> list[QPixmap]:
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="{color.name()}" '
            f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{PATHS[name]}</svg>')
     renderer = QSvgRenderer(QByteArray(svg.encode()))
-    result = QIcon()
+    out = []
     for scale in (1, 2):
         pm = QPixmap(size * scale, size * scale)
         pm.fill(Qt.GlobalColor.transparent)
@@ -26,5 +26,15 @@ def icon(name: str, color: QColor, size: int = 22) -> QIcon:
         renderer.render(painter, QRectF(0, 0, size * scale, size * scale))
         painter.end()
         pm.setDevicePixelRatio(scale)
-        result.addPixmap(pm)
+        out.append(pm)
+    return out
+
+
+def icon(name: str, color: QColor, checked_color: QColor | None = None, size: int = 22) -> QIcon:
+    """A line icon; with checked_color, a different colour when its button is checked."""
+    result = QIcon()
+    for pm in _pixmaps(name, color, size):
+        result.addPixmap(pm, QIcon.Mode.Normal, QIcon.State.Off)
+    for pm in _pixmaps(name, checked_color or color, size):
+        result.addPixmap(pm, QIcon.Mode.Normal, QIcon.State.On)
     return result

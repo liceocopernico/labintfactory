@@ -6,11 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pyqtgraph as pg
 from PySide6.QtCore import QLocale, Qt
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
-    QFrame,
     QGridLayout,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QMenu,
@@ -30,8 +28,9 @@ from labdaemon.core.device import STATE_LABELS, DeviceState
 from labdaemon.core.errors import LabError
 from labdaemon.core.i18n import _
 from labdaemon.core.manager import DeviceManager, DeviceSnapshot
+from labdaemon.gui import theme
 from labdaemon.gui.bridge import QtBridge
-from labdaemon.gui.widgets.device_chip import STATE_COLORS
+from labdaemon.gui.widgets.components import Card, PageHeader, StatePill, muted, scaled_font, set_role
 from labdaemon.gui.widgets.parameter_form import ParameterForm
 
 HISTORY_SECONDS = 60
@@ -54,14 +53,13 @@ class DevicesView(QWidget):
         left = QWidget()
         lv = QVBoxLayout(left)
         head = QHBoxLayout()
-        title = QLabel(self.tr("Boards"))
-        title.setStyleSheet("font-weight:600;")
+        title = set_role(QLabel(self.tr("Boards")), "role", "section")
         head.addWidget(title)
         head.addStretch()
         self.add_button = QToolButton()
         self.add_button.setText(self.tr("Add simulated device"))
         self.add_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.add_button.setStyleSheet("QToolButton { padding: 3px 20px 3px 8px; }")
+        set_role(self.add_button, "role", "menu-button")
         self.add_menu = QMenu(self.add_button)
         self.add_button.setMenu(self.add_menu)
         head.addWidget(self.add_button)
@@ -79,8 +77,8 @@ class DevicesView(QWidget):
         # right: details of the selected device, or an empty state
         self.detail = DeviceDetail(self)
         self.detail.form.edited.connect(self._edit)
-        self.empty = QLabel(self.tr("No device selected.\n\nConnect a board, or add a simulated device to try "
-                                    "LabDaemon without hardware."))
+        self.empty = muted(QLabel(self.tr("No device selected.\n\nConnect a board, or add a simulated device to try "
+                                          "LabDaemon without hardware.")))
         self.empty.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty.setWordWrap(True)
         self.right = QStackedWidget()
@@ -101,7 +99,7 @@ class DevicesView(QWidget):
         bridge.parameters_changed.connect(self._on_parameters_changed)
         bridge.error.connect(self._on_error)
         self._fill_add_menu()
-        self._rebuild_tree()
+        theme.on_change(self._rebuild_tree)
 
     # ── connecting ──
     def _fill_add_menu(self) -> None:
@@ -155,8 +153,8 @@ class DevicesView(QWidget):
 
     def _paint_state(self, item: QTreeWidgetItem, state: DeviceState) -> None:
         item.setToolTip(0, _(STATE_LABELS[state]))
-        item.setForeground(0, pg.mkColor(STATE_COLORS[state]) if state != DeviceState.READY
-                           else self.palette().text().color())
+        color = theme.state_color(state) if state != DeviceState.READY else theme.tokens().ink
+        item.setForeground(0, QColor(color))
 
     def _select_board(self, board_key: str) -> None:
         board = next((b for b in self.manager.boards() if b.key == board_key), None)
@@ -253,72 +251,59 @@ class DeviceDetail(QWidget):
         self._channels = []
         self._value_labels: dict[str, QLabel] = {}
         v = QVBoxLayout(self)
+        v.setSpacing(10)
 
-        head = QHBoxLayout()
-        titles = QVBoxLayout()
-        self.title = QLabel()
-        font = self.title.font()
-        font.setPointSizeF(font.pointSizeF() * 1.35)
-        font.setBold(True)
-        self.title.setFont(font)
-        self.subtitle = QLabel()
-        self.subtitle.setStyleSheet("color: palette(placeholder-text);")
-        self.subtitle.setWordWrap(True)
-        titles.addWidget(self.title)
-        titles.addWidget(self.subtitle)
-        head.addLayout(titles, 1)
-        self.state = QLabel()
-        head.addWidget(self.state, 0, Qt.AlignmentFlag.AlignTop)
-        v.addLayout(head)
+        self.header = PageHeader()
+        self.state = StatePill()
+        self.header.right.addWidget(self.state, 0, Qt.AlignmentFlag.AlignTop)
+        v.addWidget(self.header)
 
         body = QHBoxLayout()
-        settings_box = QGroupBox(self.tr("Settings"))
-        sv = QVBoxLayout(settings_box)
+        body.setSpacing(10)
+        settings_card = Card(self.tr("Settings"))
         self.form = ParameterForm()
-        sv.addWidget(self.form)
-        sv.addStretch()
-        body.addWidget(settings_box, 1)
+        settings_card.body.addWidget(self.form)
+        settings_card.body.addStretch()
+        body.addWidget(settings_card, 1)
 
-        live_box = QGroupBox(self.tr("Live reading"))
-        lv = QVBoxLayout(live_box)
+        live_card = Card(self.tr("Live reading"))
         self.big = QLabel("—")
-        big_font = QFont(self.font())
-        big_font.setPointSizeF(big_font.pointSizeF() * 2.4)
-        big_font.setBold(True)
-        self.big.setFont(big_font)
-        lv.addWidget(self.big)
+        self.big.setFont(scaled_font(self.font(), 2.4, bold=True))
+        live_card.body.addWidget(self.big)
         self.values_grid = QGridLayout()
-        lv.addLayout(self.values_grid)
+        self.values_grid.setHorizontalSpacing(16)
+        live_card.body.addLayout(self.values_grid)
         self.plot = pg.PlotWidget()
-        self.plot.setBackground(None)
         self.plot.setMinimumHeight(140)
         self.plot.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.plot.showGrid(x=True, y=True, alpha=0.25)
         self.plot.setLabel("bottom", self.tr("seconds ago"))
         self.plot.getPlotItem().getViewBox().setMouseEnabled(x=False, y=False)
-        self.curve = self.plot.plot([], [], pen=pg.mkPen("#1C5DA6", width=2))
-        lv.addWidget(self.plot, 1)
-        body.addWidget(live_box, 1)
+        self.curve = self.plot.plot([], [])
+        live_card.body.addWidget(self.plot, 1)
+        body.addWidget(live_card, 1)
         v.addLayout(body, 1)
 
-        commands_box = QGroupBox(self.tr("Commands"))
-        self.commands_row = QHBoxLayout(commands_box)
-        v.addWidget(commands_box)
+        commands_card = Card(self.tr("Commands"))
+        self.commands_row = QHBoxLayout()
+        commands_card.body.addLayout(self.commands_row)
+        v.addWidget(commands_card)
 
         self.message = QLabel()
         self.message.setWordWrap(True)
         v.addWidget(self.message)
+        theme.on_change(self._style_plot)
 
-        line = QFrame()
-        line.setFrameShape(QFrame.Shape.NoFrame)
-        v.addWidget(line)
+    def _style_plot(self) -> None:
+        theme.style_plot(self.plot)
+        self.curve.setPen(theme.series_pen("a"))
 
     def show_device(self, snap: DeviceSnapshot, history) -> None:
         b = snap.board
-        self.title.setText(f"{b.name} · {_(snap.plugin_name)}")
-        self.subtitle.setText(self.tr("board {board} · {link} · serial {serial} · firmware {fw} · protocol {proto}")
-                              .format(board=b.board, link=link_label(snap.address.link), serial=b.serial,
-                                      fw=b.firmware, proto=b.proto))
+        self.header.set_text(
+            f"{b.name} · {_(snap.plugin_name)}",
+            self.tr("board {board} · {link} · serial {serial} · firmware {fw} · protocol {proto}").format(
+                board=b.board, link=link_label(snap.address.link), serial=b.serial, fw=b.firmware, proto=b.proto))
         self.show_state(snap.state)
         self.form.set_parameters(snap.parameters, snap.values)
         self._channels = snap.channels
@@ -326,12 +311,11 @@ class DeviceDetail(QWidget):
             self.values_grid.takeAt(0).widget().deleteLater()
         self._value_labels = {}
         for row, ch in enumerate(snap.channels[1:]):
-            name = QLabel(_(ch.label))
-            name.setStyleSheet("color: palette(placeholder-text);")
             value = QLabel("—")
-            self.values_grid.addWidget(name, row, 0)
+            self.values_grid.addWidget(muted(QLabel(_(ch.label))), row, 0)
             self.values_grid.addWidget(value, row, 1)
             self._value_labels[ch.key] = value
+        self.values_grid.setColumnStretch(1, 1)
         if snap.channels:
             self.plot.setLabel("left", f"{_(snap.channels[0].label)} ({_(snap.channels[0].unit)})")
         while self.commands_row.count():
@@ -351,10 +335,7 @@ class DeviceDetail(QWidget):
         self.show_message("")
 
     def show_state(self, state: DeviceState) -> None:
-        color = STATE_COLORS[state]
-        self.state.setText(_(STATE_LABELS[state]))
-        self.state.setStyleSheet(f"color:{color}; border:1px solid {color}; border-radius:9px; padding:2px 8px;"
-                                 "font-weight:600;")
+        self.state.set_state(state)
 
     def show_sample(self, values: dict, history) -> None:
         if not self._channels:
@@ -383,4 +364,4 @@ class DeviceDetail(QWidget):
 
     def show_message(self, text: str, *, error: bool = False) -> None:
         self.message.setText(text)
-        self.message.setStyleSheet("color:#C23A3A;" if error else "")
+        set_role(self.message, "role", "error" if error else "muted")

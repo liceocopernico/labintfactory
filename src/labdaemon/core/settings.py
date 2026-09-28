@@ -22,6 +22,7 @@ APP = "labdaemon"
 
 DEFAULTS: dict[str, Any] = {
     "app.language": "en",
+    "app.theme": "system",  # system | light | dark
     "devices.poll_interval_s": 0.5,
     "plugins.allow_user_plugins": True,
     "plugins.developer_mode": False,

@@ -1,4 +1,4 @@
-"""Settings view (M0: language and polling; the rest arrives with its milestone)."""
+"""Settings view (M0: language, theme and polling; the rest arrives with its milestone)."""
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QDoubleSpinBox, QFormLayout, QLabel, QVBoxLayout, QWidget
@@ -6,16 +6,17 @@ from PySide6.QtWidgets import QComboBox, QDoubleSpinBox, QFormLayout, QLabel, QV
 from labdaemon.core.errors import PolicyLocked
 from labdaemon.core.i18n import LANGUAGES
 from labdaemon.core.settings import Settings
+from labdaemon.gui.theme import MODES, Theme
+from labdaemon.gui.widgets.components import PageHeader, muted
 
 
 class SettingsView(QWidget):
-    def __init__(self, settings: Settings, parent: QWidget | None = None) -> None:
+    def __init__(self, settings: Settings, app_theme: Theme | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.settings = settings
+        self.app_theme = app_theme
         v = QVBoxLayout(self)
-        title = QLabel(self.tr("Settings"))
-        title.setStyleSheet("font-weight:600; font-size:15pt;")
-        v.addWidget(title)
+        v.addWidget(PageHeader(self.tr("Settings")))
         form = QFormLayout()
         v.addLayout(form)
 
@@ -26,6 +27,14 @@ class SettingsView(QWidget):
         self.language.activated.connect(lambda i: self._save("app.language", self.language.itemData(i)))
         form.addRow(self.tr("Language"), self._with_note(self.language, "app.language",
                                                           self.tr("Applies after restarting LabDaemon.")))
+
+        self.theme = QComboBox()
+        names = {"system": self.tr("Same as the system"), "light": self.tr("Light"), "dark": self.tr("Dark")}
+        for mode in MODES:
+            self.theme.addItem(names[mode], mode)
+        self.theme.setCurrentIndex(max(0, self.theme.findData(settings.get("app.theme"))))
+        self.theme.activated.connect(self._change_theme)
+        form.addRow(self.tr("Appearance"), self._with_note(self.theme, "app.theme", ""))
 
         self.poll = QDoubleSpinBox()
         self.poll.setRange(0.1, 10.0)
@@ -39,13 +48,12 @@ class SettingsView(QWidget):
             self.poll, "devices.poll_interval_s", self.tr("Applies to boards connected from now on.")))
 
         paths = settings.paths
-        info = QLabel("\n".join([
+        info = muted(QLabel("\n".join([
             self.tr("Settings file: {0}").format(paths.user_settings),
             self.tr("Machine policy: {0}").format(paths.policy),
             self.tr("Logs: {0}").format(paths.log_dir),
-        ]))
+        ])))
         info.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        info.setStyleSheet("color: palette(placeholder-text);")
         v.addSpacing(12)
         v.addWidget(info)
         v.addStretch()
@@ -58,10 +66,15 @@ class SettingsView(QWidget):
         if self.settings.is_locked(key):
             editor.setEnabled(False)
             note = self.tr("Set by your administrator.")
-        label = QLabel(note)
-        label.setStyleSheet("color: palette(placeholder-text);")
-        lay.addWidget(label)
+        if note:
+            lay.addWidget(muted(QLabel(note)))
         return box
+
+    def _change_theme(self, index: int) -> None:
+        mode = self.theme.itemData(index)
+        self._save("app.theme", mode)
+        if self.app_theme is not None:
+            self.app_theme.set_mode(mode)
 
     def _save(self, key: str, value: object) -> None:
         try:

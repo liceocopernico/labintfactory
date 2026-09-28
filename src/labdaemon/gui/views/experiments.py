@@ -3,16 +3,16 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 
+from labdaemon.gui.widgets.components import PageHeader, muted
+
 
 class ExperimentsView(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         v = QVBoxLayout(self)
-        title = QLabel(self.tr("Experiments"))
-        title.setStyleSheet("font-weight:600; font-size:15pt;")
-        v.addWidget(title)
-        self.message = QLabel(self.tr("No experiment plugins are installed yet. You can already connect devices "
-                                      "and watch their readings in Devices."))
+        v.addWidget(PageHeader(self.tr("Experiments")))
+        self.message = muted(QLabel(self.tr("No experiment plugins are installed yet. You can already connect "
+                                            "devices and watch their readings in Devices.")))
         self.message.setWordWrap(True)
         self.message.setAlignment(Qt.AlignmentFlag.AlignTop)
         v.addWidget(self.message)

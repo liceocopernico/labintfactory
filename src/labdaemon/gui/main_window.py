@@ -1,6 +1,7 @@
 """Main window: navigation rail, the pages, and a status bar with one chip per board."""
 
 from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QButtonGroup,
     QHBoxLayout,
@@ -16,6 +17,7 @@ from labdaemon.core.device import DeviceState
 from labdaemon.core.manager import DeviceManager
 from labdaemon.core.registry import Registry
 from labdaemon.core.settings import Settings
+from labdaemon.gui import theme
 from labdaemon.gui.bridge import QtBridge
 from labdaemon.gui.icons import icon
 from labdaemon.gui.views.devices import DevicesView
@@ -31,7 +33,7 @@ _SEVERITY = [DeviceState.LOST, DeviceState.ERROR, DeviceState.CONNECTING, Device
 
 class MainWindow(QMainWindow):
     def __init__(self, manager: DeviceManager, registry: Registry, settings: Settings,
-                 bridge: QtBridge) -> None:
+                 bridge: QtBridge, app_theme: theme.Theme | None = None) -> None:
         super().__init__()
         self.manager = manager
         self.setWindowTitle("LabDaemon")
@@ -40,7 +42,7 @@ class MainWindow(QMainWindow):
         self.experiments = ExperimentsView()
         self.devices = DevicesView(manager, bridge)
         self.plugins = PluginsView(registry, manager, settings.paths.user_plugins)
-        self.settings_view = SettingsView(settings)
+        self.settings_view = SettingsView(settings, app_theme)
         self.stack = QStackedWidget()
 
         rail = QWidget()
@@ -56,14 +58,14 @@ class MainWindow(QMainWindow):
                  ("plugins", self.tr("Plugins"), self.plugins),
                  (None, None, None),
                  ("settings", self.tr("Settings"), self.settings_view)]
-        color = self.palette().text().color()
+        self._rail_buttons: list[tuple[QToolButton, str]] = []
         for name, label, page in pages:
             if name is None:
                 rv.addStretch()
                 continue
             button = QToolButton()
             button.setText(label)
-            button.setIcon(icon(name, color))
+            self._rail_buttons.append((button, name))
             button.setIconSize(QSize(22, 22))
             button.setCheckable(True)
             button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
@@ -74,10 +76,7 @@ class MainWindow(QMainWindow):
             self.nav.addButton(button)
             button.setProperty("page", page)
             rv.addWidget(button)
-        rail.setStyleSheet(
-            "#rail { border-right: 1px solid palette(mid); }"
-            "#rail QToolButton { border: none; border-radius: 6px; padding: 6px 2px; }"
-            "#rail QToolButton:checked { background: palette(highlight); color: palette(highlighted-text); }")
+        theme.on_change(self._paint_rail_icons)
 
         central = QWidget()
         h = QHBoxLayout(central)
@@ -91,7 +90,14 @@ class MainWindow(QMainWindow):
         bridge.boards_changed.connect(self._rebuild_chips)
         bridge.device_state.connect(lambda *_: self._update_chips())
         bridge.boards_changed.connect(self.plugins.refresh)
+        if app_theme is not None:
+            app_theme.changed.connect(self._update_chips)
         self.show_page(self.devices)
+
+    def _paint_rail_icons(self) -> None:
+        t = theme.tokens()
+        for button, name in self._rail_buttons:
+            button.setIcon(icon(name, QColor(t.muted), QColor(t.sel_text)))
 
     def show_page(self, page: QWidget) -> None:
         self.stack.setCurrentWidget(page)

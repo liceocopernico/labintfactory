@@ -15,6 +15,7 @@ from labdaemon.core.registry import Registry
 from labdaemon.core.settings import Settings, plugin_dirs
 from labdaemon.gui.bridge import QtBridge
 from labdaemon.gui.main_window import MainWindow
+from labdaemon.gui.theme import Theme
 
 QT_I18N_DIR = Path(__file__).resolve().parent / "i18n"
 
@@ -65,14 +66,14 @@ def main(argv: list[str] | None = None) -> int:
     app = QApplication.instance() or QApplication(sys.argv[:1])
     app.setApplicationName("LabDaemon")
     app.setApplicationVersion(__version__)
-    app.setStyle("Fusion")
+    app_theme = Theme(app, settings.get("app.theme"))
     install_translations(app, i18n.language())
 
     registry = Registry(plugin_dirs(settings, args.plugin_dir),
                         developer_mode=bool(settings.get("plugins.developer_mode"))).load()
     manager = DeviceManager(registry, settings)
     bridge = QtBridge(manager)
-    window = MainWindow(manager, registry, settings, bridge)
+    window = MainWindow(manager, registry, settings, bridge, app_theme)
     window.show()
     for plugin_id in args.simulate:
         window.devices.add_simulated(plugin_id)
