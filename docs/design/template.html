@@ -7,8 +7,8 @@
   --bg:#F3F5F4; --surface:#FFFFFF; --surface-2:#E8EDEB; --ink:#16201C; --ink-2:#43504B; --muted:#65726D; --rule:#D2DAD6;
   --accent:#1C5DA6; --accent-soft:#E1EAF5; --amber:#9F5608; --amber-soft:#FAEAD5; --ok:#2B7A4B; --warn:#8F6200; --err:#B23434;
   --code-bg:#ECF0EE;
-  --m-win:#FBFBFB; --m-chrome:#E3E7E5; --m-panel:#F1F3F2; --m-field:#FFFFFF; --m-ink:#1D2421; --m-muted:#66706C; --m-rule:#C8CFCC;
-  --m-sel:#1C5DA6; --m-sel-ink:#FFFFFF; --m-sel-soft:#DCE6F3; --m-ok:#2B8A52; --m-warn:#A87300; --m-err:#C23A3A; --m-shadow:rgba(20,30,26,.22);
+  --m-win:#FBFBFB; --m-chrome:#E3E7E5; --m-panel:#F1F3F2; --m-field:#FFFFFF; --m-ink:#1D2421; --m-muted:#5F6965; --m-rule:#C8CFCC;
+  --m-sel:#1C5DA6; --m-sel-ink:#FFFFFF; --m-sel-soft:#DCE6F3; --m-sel-text:#1C5DA6; --m-ok:#2B7A4B; --m-warn:#8F6200; --m-err:#B83535; --m-shadow:rgba(20,30,26,.22);
   --s-a:#1C5DA6; --s-fit:#C8650A; --s-x:#C2394B; --s-y:#2E8B57; --s-z:#1C5DA6;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --display:"Instrument Sans","IBM Plex Sans",system-ui,sans-serif;
@@ -21,8 +21,8 @@
     --bg:#0E1312; --surface:#151C1A; --surface-2:#1C2522; --ink:#E2E8E5; --ink-2:#B4BFBA; --muted:#8C9893; --rule:#2B3632;
     --accent:#7DAEF0; --accent-soft:#17283B; --amber:#EBA451; --amber-soft:#34250F; --ok:#6CC08F; --warn:#E3B341; --err:#F08080;
     --code-bg:#111816;
-    --m-win:#1E2422; --m-chrome:#2A312E; --m-panel:#232A28; --m-field:#161B1A; --m-ink:#E1E7E4; --m-muted:#97A29D; --m-rule:#3A4440;
-    --m-sel:#3D7BCB; --m-sel-ink:#FFFFFF; --m-sel-soft:#22364F; --m-ok:#5DBE85; --m-warn:#E0B040; --m-err:#EE7A7A; --m-shadow:rgba(0,0,0,.55);
+    --m-win:#1E2422; --m-chrome:#2A312E; --m-panel:#232A28; --m-field:#161B1A; --m-ink:#E1E7E4; --m-muted:#9CA7A2; --m-rule:#3A4440;
+    --m-sel:#2F6DB8; --m-sel-ink:#FFFFFF; --m-sel-soft:#22364F; --m-sel-text:#7DAEF0; --m-ok:#5DBE85; --m-warn:#E0B040; --m-err:#EE7A7A; --m-shadow:rgba(0,0,0,.55);
     --s-a:#7DAEF0; --s-fit:#F0A04B; --s-x:#F07A8A; --s-y:#62C48C; --s-z:#7DAEF0;
   }
 }
@@ -31,8 +31,8 @@
   --bg:#0E1312; --surface:#151C1A; --surface-2:#1C2522; --ink:#E2E8E5; --ink-2:#B4BFBA; --muted:#8C9893; --rule:#2B3632;
   --accent:#7DAEF0; --accent-soft:#17283B; --amber:#EBA451; --amber-soft:#34250F; --ok:#6CC08F; --warn:#E3B341; --err:#F08080;
   --code-bg:#111816;
-  --m-win:#1E2422; --m-chrome:#2A312E; --m-panel:#232A28; --m-field:#161B1A; --m-ink:#E1E7E4; --m-muted:#97A29D; --m-rule:#3A4440;
-  --m-sel:#3D7BCB; --m-sel-ink:#FFFFFF; --m-sel-soft:#22364F; --m-ok:#5DBE85; --m-warn:#E0B040; --m-err:#EE7A7A; --m-shadow:rgba(0,0,0,.55);
+  --m-win:#1E2422; --m-chrome:#2A312E; --m-panel:#232A28; --m-field:#161B1A; --m-ink:#E1E7E4; --m-muted:#9CA7A2; --m-rule:#3A4440;
+  --m-sel:#2F6DB8; --m-sel-ink:#FFFFFF; --m-sel-soft:#22364F; --m-sel-text:#7DAEF0; --m-ok:#5DBE85; --m-warn:#E0B040; --m-err:#EE7A7A; --m-shadow:rgba(0,0,0,.55);
   --s-a:#7DAEF0; --s-fit:#F0A04B; --s-x:#F07A8A; --s-y:#62C48C; --s-z:#7DAEF0;
 }
 
@@ -131,14 +131,14 @@ figure{margin:28px 0 8px}
 .rail{background:var(--m-panel);border-right:1px solid var(--m-rule);display:flex;flex-direction:column;gap:2px;padding:8px 6px}
 .rail .it{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 2px 7px;border-radius:6px;font-size:11px;color:var(--m-muted)}
 .rail .it svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.rail .it.on{background:var(--m-sel-soft);color:var(--m-sel);font-weight:600}
+.rail .it.on{background:var(--m-sel-soft);color:var(--m-sel-text);font-weight:600}
 .rail .sp{flex:1}
 .main{padding:16px 18px;min-width:0}
 .sb{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;padding:6px 12px;background:var(--m-chrome);border-top:1px solid var(--m-rule);font-size:12px;color:var(--m-muted)}
 .sb .grow{flex:1}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--m-ok);margin-right:6px;vertical-align:0}
 .dot.off{background:transparent;border:1.5px solid var(--m-muted)}
-.dot.warn{background:var(--m-warn)} .dot.err{background:var(--m-err)} .dot.busy{background:var(--m-sel)}
+.dot.warn{background:var(--m-warn)} .dot.err{background:var(--m-err)} .dot.busy{background:var(--m-sel-text)}
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--m-rule);background:var(--m-field);color:var(--m-ink);border-radius:4px;padding:4px 11px;font:inherit;white-space:nowrap}
 .btn.pri{background:var(--m-sel);border-color:var(--m-sel);color:var(--m-sel-ink)}
 .btn.danger{background:var(--m-err);border-color:var(--m-err);color:#fff}
@@ -156,12 +156,12 @@ figure{margin:28px 0 8px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .between{justify-content:space-between}
 .chipf{border:1px solid var(--m-rule);border-radius:12px;padding:2px 10px;font-size:12px;color:var(--m-muted)}
-.chipf.on{background:var(--m-sel-soft);border-color:transparent;color:var(--m-sel);font-weight:600}
+.chipf.on{background:var(--m-sel-soft);border-color:transparent;color:var(--m-sel-text);font-weight:600}
 .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:9px;background:var(--m-panel);color:var(--m-muted);border:1px solid var(--m-rule)}
 .pill.ok{color:var(--m-ok);border-color:currentColor;background:transparent}
 .pill.err{color:var(--m-err);border-color:currentColor;background:transparent}
 .pill.warn{color:var(--m-warn);border-color:currentColor;background:transparent}
-.pill.dev{color:var(--m-sel);border-style:dashed;border-color:currentColor;background:transparent}
+.pill.dev{color:var(--m-sel-text);border-style:dashed;border-color:currentColor;background:transparent}
 .xcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
 .xcard{border:1px solid var(--m-rule);border-radius:7px;padding:12px 13px;background:var(--m-win);display:flex;flex-direction:column;gap:7px}
 .xcard .cat{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--m-muted)}
@@ -214,9 +214,9 @@ figure{margin:28px 0 8px}
 .steps .s b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--m-rule);font-size:11px;font-weight:600}
 .steps .s.done b{background:var(--m-ok);border-color:var(--m-ok);color:#fff}
 .steps .s.now{background:var(--m-win);color:var(--m-ink);font-weight:600;box-shadow:0 0 0 1px var(--m-rule)}
-.steps .s.now b{border-color:var(--m-sel);color:var(--m-sel)}
+.steps .s.now b{border-color:var(--m-sel-text);color:var(--m-sel-text)}
 .instr{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:11px 13px;border-radius:6px;background:var(--m-sel-soft);font-size:13px}
-.instr svg{width:40px;height:52px;fill:none;stroke:var(--m-sel);stroke-width:1.6}
+.instr svg{width:40px;height:52px;fill:none;stroke:var(--m-sel-text);stroke-width:1.6}
 figcaption{margin-top:6px;font-size:14.5px;color:var(--ink-2)}
 figcaption .cap{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px}
 .notes{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:7px}
@@ -258,7 +258,7 @@ html{scroll-behavior:smooth}
 .tree .h{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--m-muted);padding:8px 6px 4px}
 .tree .f{padding:4px 6px 4px 14px;border-radius:4px}
 .tree .f.sub{padding-left:28px;color:var(--m-muted)}
-.tree .f.on{background:var(--m-sel-soft);color:var(--m-sel);font-weight:600}
+.tree .f.on{background:var(--m-sel-soft);color:var(--m-sel-text);font-weight:600}
 .ptabs{display:flex;gap:0;border-bottom:1px solid var(--m-rule);font-size:12px;background:var(--m-panel)}
 .ptabs span{padding:5px 12px;color:var(--m-muted)}
 .ptabs span.on{color:var(--m-ink);font-weight:600;background:var(--m-win);border-inline:1px solid var(--m-rule)}
@@ -305,7 +305,7 @@ html{scroll-behavior:smooth}
 
 <main class="doc">
 <header>
-  <div class="eyebrow">Design proposal · draft 0.6 for approval</div>
+  <div class="eyebrow">Design proposal · draft 0.7 for approval</div>
   <h1 style="margin-top:14px">LabDaemon Desktop</h1>
   <p class="lede">LabDaemon is a standalone Windows and Linux application for school lab instruments. A small Qt-free core runs three layers of plugins: transports, devices and experiments. A PySide6 interface on top offers a guided mode for first runs and students, and an expert mode for everything after.</p>
   <div class="meta">
@@ -317,13 +317,12 @@ html{scroll-behavior:smooth}
     <p><strong>How to review.</strong> Settled choices carry a <span class="tag dec">Decision</span> label. All open questions are now answered; §14 lists what to verify first, in M0. In the mockups (§8), the numbered markers <span class="co">1</span> refer to the notes under each figure.</p>
   </div>
   <div class="note">
-    <p><strong>What changed in draft 0.6</strong>: hardware information for every device.</p>
+    <p><strong>What changed in draft 0.7</strong>: the mockups use the colour tokens of the implemented theme.</p>
     <ul style="margin:6px 0 2px">
-      <li><strong>Hardware sheets</strong> (§7.4, mockup 9). Each device plugin ships its parts, key datasheet figures, charts, notes and datasheet links. A new <em>Hardware</em> tab in the Devices view shows them next to a live operating point: how close each channel is to saturating, the resolution, and what a setting change would do.</li>
-      <li><strong>The code uses the sheet's figures too.</strong> Writing the TSL2591 sheet exposed a bug: the current code checks saturation against the TSL2561's 65 000 counts, but at 100 ms the TSL2591 tops out at 36 863, so saturation is never detected there. It is now in the bug table (§9).</li>
-      <li>An optional <code>HW?</code> command lets a board confirm its parts, so one plugin can support hardware variants (§4.4).</li>
-      <li>The example readings throughout the document now agree with the TSL2591 lux formula (for example 5 691 / 1 899 counts → 412.4 lx at 100 ms, gain 25×).</li>
-      <li>Draft 0.5 added the Firmware view with the Monaco editor (§7.3, mockup 8).</li>
+      <li>Since M0, the app's theme lives in <code>src/labdaemon/gui/theme.py</code>, and that file is now the reference for colours. The mockups on this page use the same values (§7.5).</li>
+      <li>Light mode: the grey text and the green, amber and red state colours are slightly darker, so every text colour reaches the WCAG AA contrast of 4.5:1.</li>
+      <li>Dark mode: the accent is split in two. <code>sel</code> (#2F6DB8) is the fill behind white text; the new <code>sel_text</code> (#7DAEF0) colours accent text and icons, such as the selected navigation item, info pills and dev-plugin badges.</li>
+      <li>Draft 0.6 added hardware sheets (§7.4, mockup 9).</li>
     </ul>
   </div>
 </header>
@@ -1002,7 +1001,7 @@ emission_spectrum = <span class="s">"experiment:EmissionSpectrum"</span>
       </ul>
     </li>
     <li><strong>Bridge</strong>: <code>QtBridge</code> turns core signals and futures into queued Qt signals, and <code>watch(future, on_ok, on_error)</code> handles asynchronous calls from widgets.</li>
-    <li><strong>Look</strong>: the Fusion style with the app's own palette, following the system light/dark setting (Qt ≥ 6.5), with High-DPI support. <strong>Presentation mode</strong> (F11) enlarges fonts and plot lines for the classroom projector.</li>
+    <li><strong>Look</strong>: the Fusion style with the app's own palette, following the system light/dark setting (Qt ≥ 6.5), with High-DPI support. Colours come only from the theme tokens (§7.5). <strong>Presentation mode</strong> (F11) enlarges fonts and plot lines for the classroom projector.</li>
     <li><strong>Translations</strong>: English by default, Italian available. See §7.1.</li>
     <li><strong>Keyboard</strong>: Space measures in the current step, Ctrl+R starts a run, Esc stops a run or a moving actuator. Device state is shown in text as well as colour, and the plot series palette is safe for colour-blind users.</li>
   </ul>
@@ -1147,6 +1146,27 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
     <li><strong>Students see it too.</strong> The Hardware tab is read-only and stays visible when the student lock is on, because it is teaching material.</li>
     <li><strong>From Jupyter:</strong> <code>photo.hardware.specs["full_scale_counts"]</code>, <code>photo.hardware.chart("spectral_response")</code> (a table) and <code>photo.operating_point()</code>.</li>
   </ul>
+
+  <h3><span class="num">7.5</span>Theme and colour tokens</h3>
+  <p><span class="tag dec">Decision</span> Views never choose colours or write stylesheets. <code>gui/theme.py</code> holds the tokens below and turns them into Qt's palette and one application stylesheet. <code>gui/widgets/components.py</code> provides the shared pieces: <code>Card</code>, <code>PageHeader</code>, <code>StatePill</code>, <code>StateDot</code>, primary buttons and text roles. A test fails if any other GUI file hard-codes a colour, and another checks that every text colour meets WCAG AA (4.5:1) in both variants. Detailed visual polish (bundled fonts, icons, spacing, presentation mode) is planned for M4.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Token</th><th>Use</th><th>Light</th><th>Dark</th></tr></thead>
+    <tbody>
+      <tr><td><code>win</code></td><td>window and card background</td><td class="nw"><code>#FBFBFB</code></td><td class="nw"><code>#1E2422</code></td></tr>
+      <tr><td><code>chrome</code></td><td>status bar, title strips</td><td class="nw"><code>#E3E7E5</code></td><td class="nw"><code>#2A312E</code></td></tr>
+      <tr><td><code>panel</code></td><td>side panels, card headers, table headers</td><td class="nw"><code>#F1F3F2</code></td><td class="nw"><code>#232A28</code></td></tr>
+      <tr><td><code>field</code></td><td>input fields, chart background</td><td class="nw"><code>#FFFFFF</code></td><td class="nw"><code>#161B1A</code></td></tr>
+      <tr><td><code>ink</code></td><td>text</td><td class="nw"><code>#1D2421</code></td><td class="nw"><code>#E1E7E4</code></td></tr>
+      <tr><td><code>muted</code></td><td>secondary text</td><td class="nw"><code>#5F6965</code></td><td class="nw"><code>#9CA7A2</code></td></tr>
+      <tr><td><code>rule</code></td><td>borders, grid lines</td><td class="nw"><code>#C8CFCC</code></td><td class="nw"><code>#3A4440</code></td></tr>
+      <tr><td><code>sel</code></td><td>accent fill: selection, primary buttons</td><td class="nw"><code>#1C5DA6</code></td><td class="nw"><code>#2F6DB8</code></td></tr>
+      <tr><td><code>sel_ink</code></td><td>text on the accent fill</td><td class="nw"><code>#FFFFFF</code></td><td class="nw"><code>#FFFFFF</code></td></tr>
+      <tr><td><code>sel_soft</code></td><td>selected navigation item, highlighted rows</td><td class="nw"><code>#DCE6F3</code></td><td class="nw"><code>#22364F</code></td></tr>
+      <tr><td><code>sel_text</code></td><td>accent text and icons, "busy" pills</td><td class="nw"><code>#1C5DA6</code></td><td class="nw"><code>#7DAEF0</code></td></tr>
+      <tr><td><code>ok</code> · <code>warn</code> · <code>err</code></td><td>states: ready, connecting, error</td><td class="nw"><code>#2B7A4B</code> · <code>#8F6200</code> · <code>#B83535</code></td><td class="nw"><code>#5DBE85</code> · <code>#E0B040</code> · <code>#EE7A7A</code></td></tr>
+      <tr><td><code>series</code></td><td>charts: main, fit, x, y, z</td><td><code>#1C5DA6</code> · <code>#C8650A</code> · <code>#C2394B</code> · <code>#2E8B57</code> · <code>#1C5DA6</code></td><td><code>#7DAEF0</code> · <code>#F0A04B</code> · <code>#F07A8A</code> · <code>#62C48C</code> · <code>#7DAEF0</code></td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <section id="mockups">
@@ -1394,7 +1414,7 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
         </div>
         <div class="main" style="display:grid;gap:12px">
           <div class="instr">
-            <svg viewBox="0 0 40 52" aria-hidden="true"><path d="M8 4h24v44H8z"/><path d="M8 22h24" stroke-dasharray="2 2"/><path d="M11 24h18v21H11z" fill="var(--m-sel)" fill-opacity=".25" stroke="none"/></svg>
+            <svg viewBox="0 0 40 52" aria-hidden="true"><path d="M8 4h24v44H8z"/><path d="M8 22h24" stroke-dasharray="2 2"/><path d="M11 24h18v21H11z" fill="var(--m-sel-text)" fill-opacity=".25" stroke="none"/></svg>
             <div><b>Measure each standard solution</b><br>Rinse the cuvette with the next standard, fill it to the line and insert it with the clear faces towards the light. Type its concentration, then press <b>Measure</b> or Space. <span class="m-sub">At least 3 standards; 5 recommended.</span></div>
           </div>
           <div style="display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px">
@@ -1996,7 +2016,7 @@ update_check = false</code></pre>
     <li id="c6"><b>C6</b><div><strong>Installer size</strong><p>Measure how much the embedded web engine (<code>PySide6-Addons</code>) adds to the Windows installer and the AppImage. If it is too much for school PCs, the Firmware view's editor can become a separate optional download.</p></div></li>
   </ol>
   <div class="note"><p><strong>Answered questions.</strong> Draft 0.2: Q1 firmware, Q2 stopping, Q4 languages, Q6 scipy. Draft 0.3: Q3, Q5, Q7–Q13. Draft 0.4: Q14 Wi-Fi addressing, Q15 package name, Q16 installer. All of them are in the decisions table in §0.</p></div>
-  <p class="foot-note" style="margin-top:28px">Draft 0.6 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
+  <p class="foot-note" style="margin-top:28px">Draft 0.7 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
 </section>
 </main>
 </div>
