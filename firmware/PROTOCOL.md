@@ -114,6 +114,14 @@ Reference firmware: `firmware/sketches/photometer` (Arduino UNO R4 Minima). Ther
 
 The host computes lux from the counts: `lux = (bb − ir)(1 − ir/bb) / (t·g/408)`. Full scale is 36 863 counts at 100 ms and 65 535 from 200 ms.
 
+**Planned: multi-LED boards.** A photometer with several LEDs that the firmware can switch between (next goal in the design's roadmap) extends this function without breaking single-LED boards:
+
+- `HW?` reports `leds=red,orange,green,blue` (the LEDs it has) instead of `led=<colour>`.
+- `LED <power> [colour]` takes an optional colour: the board lights that LED, and only that one.
+- `LED?` also reports `color=`, which is now the LED that is lit.
+
+Hosts check `HW?`: with `leds=` the colour is a real setting; with `led=` it is a record of the fitted LED, as above.
+
 ## 10. Example session
 
 Recorded from the reference photometer (UNO R4 Minima):

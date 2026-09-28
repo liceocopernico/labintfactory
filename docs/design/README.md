@@ -2,7 +2,7 @@
 
 The design proposal for LabDaemon, the standalone desktop app that replaces the Jupyter/ipywidgets interface of `labintfactory`. It covers the architecture, the LabInt wire protocol, the plugins, the GUI with its mockups, and the roadmap.
 
-Current version: **draft 0.7**. Published page: https://claude.ai/artifact/WHEASfHFZgTas2KxyAo5RE (private; share it from the page's Share menu).
+Current version: **draft 0.8**. Published page: https://claude.ai/artifact/WHEASfHFZgTas2KxyAo5RE (private; share it from the page's Share menu).
 
 ## Files
 

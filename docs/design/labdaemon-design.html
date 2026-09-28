@@ -305,7 +305,7 @@ html{scroll-behavior:smooth}
 
 <main class="doc">
 <header>
-  <div class="eyebrow">Design proposal · draft 0.7 for approval</div>
+  <div class="eyebrow">Design proposal · draft 0.8</div>
   <h1 style="margin-top:14px">LabDaemon Desktop</h1>
   <p class="lede">LabDaemon is a standalone Windows and Linux application for school lab instruments. A small Qt-free core runs three layers of plugins: transports, devices and experiments. A PySide6 interface on top offers a guided mode for first runs and students, and an expert mode for everything after.</p>
   <div class="meta">
@@ -317,12 +317,13 @@ html{scroll-behavior:smooth}
     <p><strong>How to review.</strong> Settled choices carry a <span class="tag dec">Decision</span> label. All open questions are now answered; §14 lists what to verify first, in M0. In the mockups (§8), the numbered markers <span class="co">1</span> refer to the notes under each figure.</p>
   </div>
   <div class="note">
-    <p><strong>What changed in draft 0.7</strong>: the mockups use the colour tokens of the implemented theme.</p>
+    <p><strong>What changed in draft 0.8</strong>: the real photometer, as found and built in M1.</p>
     <ul style="margin:6px 0 2px">
-      <li>Since M0, the app's theme lives in <code>src/labdaemon/gui/theme.py</code>, and that file is now the reference for colours. The mockups on this page use the same values (§7.5).</li>
-      <li>Light mode: the grey text and the green, amber and red state colours are slightly darker, so every text colour reaches the WCAG AA contrast of 4.5:1.</li>
-      <li>Dark mode: the accent is split in two. <code>sel</code> (#2F6DB8) is the fill behind white text; the new <code>sel_text</code> (#7DAEF0) colours accent text and icons, such as the selected navigation item, info pills and dev-plugin badges.</li>
-      <li>Draft 0.6 added hardware sheets (§7.4, mockup 9).</li>
+      <li><strong>One LED, not four.</strong> The photometer has a single LED driven by the board's 12-bit DAC. Its colour is whichever LED is fitted. The protocol is now <code>LED &lt;power&gt;</code>, plus <code>LEDCOLOR &lt;colour&gt;</code>, which records the fitted LED in EEPROM so the app knows its power range and stores it with every measurement (§4.4, mockups 2 and 9).</li>
+      <li><strong>Arduino UNO R4 Minima.</strong> The photometer board is an UNO R4 (Renesas RA4M1), not a classic AVR Uno. It is now in the platform table: its serial number comes from the chip's factory ID, and it does not reset when the port opens, so the app checks readiness with <code>PING</code> (§4.4).</li>
+      <li><strong>Next goal: a multi-LED photometer board</strong> with LEDs the firmware can switch between, which brings back colour selection by command (§13).</li>
+      <li>M0 and M1 status in the roadmap, and the results of early checks C1 and C3 (§13, §14).</li>
+      <li>Draft 0.7 aligned the mockups' colours with the implemented theme (§7.5).</li>
     </ul>
   </div>
 </header>
@@ -345,7 +346,7 @@ html{scroll-behavior:smooth}
       <tr><td class="nw">Analysis <span class="m-sub">Q6</span></td><td>scipy is a runtime dependency</td><td>Non-linear fits with uncertainties through <code>scipy.optimize.curve_fit</code>, and a shared model library (§4.7).</td></tr>
       <tr><td class="nw">Languages <span class="m-sub">Q4</span></td><td>English by default, Italian available</td><td>English source strings; Italian catalogs for the GUI, the core and built-in plugins; a completeness check in CI (§7.1).</td></tr>
       <tr><td class="nw">Boards <span class="m-sub">Q3</span></td><td>Combined boards are possible</td><td>A board reports its <code>functions</code>; each function is a device with its own plugin, capabilities and lease (§4.3).</td></tr>
-      <tr><td class="nw">Microcontrollers <span class="m-sub">Q12</span></td><td>Arduino (AVR), ESP32, STM32, Teensy, all in C++</td><td>One C++ <code>LabInt</code> library on the Arduino core API, with platform adapters for storage and unique IDs. Built with PlatformIO. No MicroPython module.</td></tr>
+      <tr><td class="nw">Microcontrollers <span class="m-sub">Q12</span></td><td>Arduino (AVR and UNO R4), ESP32, STM32, Teensy, all in C++</td><td>One C++ <code>LabInt</code> library on the Arduino core API, with platform adapters for storage and unique IDs. Built with PlatformIO. No MicroPython module.</td></tr>
       <tr><td class="nw">Links <span class="m-sub">Q13, Q7</span></td><td>ESP32 over USB, Wi-Fi or Bluetooth; Vernier over USB or Bluetooth; chosen by the user</td><td>Transports for serial, TCP (Wi-Fi) and BLE carry the same protocol. Discovery covers all three links, and each board remembers its preferred link (§4.4).</td></tr>
       <tr><td class="nw">Student lock <span class="m-sub">Q5</span></td><td>Implemented</td><td>A PIN, re-locking after inactivity, and a machine policy that can force it at startup (§6.1).</td></tr>
       <tr><td class="nw">Sessions <span class="m-sub">Q8</span></td><td>One <code>.labint</code> zip per session</td><td>Format as in §4.7.</td></tr>
@@ -400,7 +401,7 @@ html{scroll-behavior:smooth}
     <div class="layer"><div class="lab">Device plugins<small>implement capabilities</small></div><div class="band"><span>tsl2591 photometer</span><span>stepper actuator</span><span>thermometer</span><span>vernier go direct</span><span>simulated</span><span class="ext">+ plugin folder</span></div></div>
     <div class="layer"><div class="lab">Transports<small>bytes and framing</small></div><div class="band"><span>serial · USB</span><span>tcp · Wi-Fi + mDNS</span><span>ble · Bluetooth LE</span><span>LabInt wire protocol</span><span>godirect · USB / BLE</span><span>simulated</span></div></div>
     <div class="qtline" style="color:var(--muted)"><span>USB · Wi-Fi · BLE</span><div style="border-top-color:var(--muted)">PC above · microcontroller below</div></div>
-    <div class="layer"><div class="lab">Firmware<small>runs on the boards</small></div><div class="band"><span>protocol spec</span><span>LabInt C++ library</span><span>links: Serial · Wi-Fi · BLE</span><span>AVR · ESP32 · STM32 · Teensy</span><span>reference sketches</span></div></div>
+    <div class="layer"><div class="lab">Firmware<small>runs on the boards</small></div><div class="band"><span>protocol spec</span><span>LabInt C++ library</span><span>links: Serial · Wi-Fi · BLE</span><span>AVR · UNO R4 · ESP32 · STM32 · Teensy</span><span>reference sketches</span></div></div>
   </div>
 
   <h3>Dependency rules</h3>
@@ -654,17 +655,18 @@ html{scroll-behavior:smooth}
       <tr><td><code>NAME Bench-5</code></td><td><code>OK</code></td><td>Stores a friendly name on the board.</td></tr>
       <tr><td><code>AUTH &lt;token&gt;</code></td><td><code>OK</code> / <code>ERR 8</code></td><td>Required first on Wi-Fi and Bluetooth.</td></tr>
       <tr><td><code>WIFI …</code>, <code>TOKEN?</code></td><td><code>OK</code>, <code>OK token=K7Q2M9XD</code></td><td>Wi-Fi setup (DHCP or static IP) and token reading; USB only.</td></tr>
-      <tr><td><code>fn:HW?</code> (optional)</td><td><code>OK sensor=tsl2591 leds=rgbo-5mm</code></td><td>The parts a function is built with, so the plugin shows the right hardware sheet and uses the right formulas (§7.4).</td></tr>
+      <tr><td><code>fn:HW?</code> (optional)</td><td><code>OK sensor=tsl2591 led=red</code></td><td>The parts a function is built with, so the plugin shows the right hardware sheet and uses the right formulas (§7.4).</td></tr>
       <tr><td><code>NET?</code></td><td><code>OK ssid="Lab 2" ip=192.168.20.41 rssi=-58</code></td><td>Network status, shown in the Devices view.</td></tr>
     </tbody>
   </table></div>
 <pre><code><span class="c"># combined board: ESP32 "Bench-5" over Wi-Fi</span>
 → AUTH K7Q2M9XD                 ← OK
 → ID?                           ← OK proto=1 board=esp32 fw=1.2.0 … functions=photometer,thermometer
-→ photometer:LED red 1850       ← OK
-→ photometer:READ 3             ← OK fn=photometer bb=5691 ir=1899 sat=0
+→ photometer:LED 1850           ← OK fn=photometer power=1850
+→ photometer:READ 3             ← BUSY fn=photometer
+                                ← EVT DONE fn=photometer cmd=READ bb=5691 ir=1899 sat=0 n=3
 → thermometer:READ?             ← OK fn=thermometer t=21.37
-→ photometer:LED green 5000     ← ERR 3 power out of range 780..900
+→ photometer:LED 99999          ← ERR 3 out of range 0..4095
 
 <span class="c"># single-function board: Teensy 4.1 "Rail-1" over USB (prefix optional)</span>
 → LIMITS?                       ← OK fn=linear-actuator travel=380.980 step=0.00125 homed=1
@@ -685,17 +687,18 @@ html{scroll-behavior:smooth}
   <p>Arduinos that reset when the USB port opens announce themselves with <code>EVT BOOT</code>. The client waits for that event (at most 3 s) instead of sleeping for a fixed time.</p>
 
   <h4>Firmware side: the <code>LabInt</code> C++ library</h4>
-  <p>The library is written against the Arduino core API, so the same code builds for AVR (Uno, Mega, Nano), ESP32 (Arduino-ESP32), STM32 (STM32duino) and Teensy (Teensyduino). A small platform layer covers what differs between them:</p>
+  <p>The library is written against the Arduino core API, so the same code builds for AVR (Uno, Mega, Nano), Renesas RA (UNO R4 Minima and WiFi), ESP32 (Arduino-ESP32), STM32 (STM32duino) and Teensy (Teensyduino). A small platform layer covers what differs between them:</p>
   <div class="tbl"><table>
     <thead><tr><th>Platform</th><th>Unique serial</th><th>Settings storage</th><th>Links</th></tr></thead>
     <tbody>
       <tr><td>AVR</td><td>random, generated on first boot and kept in EEPROM</td><td>EEPROM</td><td>USB</td></tr>
+      <tr><td>UNO R4 (Renesas RA4M1)</td><td>128-bit factory ID, folded to 48 bits</td><td>EEPROM emulation in data flash</td><td>USB (native: no reset when the port opens)</td></tr>
       <tr><td>ESP32</td><td>eFuse MAC</td><td>NVS (<code>Preferences</code>)</td><td>USB, Wi-Fi, Bluetooth</td></tr>
       <tr><td>STM32</td><td>96-bit device UID</td><td>EEPROM emulation in flash</td><td>USB</td></tr>
       <tr><td>Teensy</td><td>hardware serial number</td><td>EEPROM</td><td>USB</td></tr>
     </tbody>
   </table></div>
-  <p>It uses fixed buffers and no heap, and keeps strings in flash, so it fits an Uno with 2 KB of RAM. Wi-Fi and Bluetooth are compiled in only when enabled with build flags. A sketch declares its functions and their commands:</p>
+  <p>It uses fixed buffers and no heap. On the UNO R4 the photometer firmware uses 20 % of the 32 KB of RAM; on a classic Uno a minimal sketch already uses 62 % of 2 KB, so the library's strings move to flash before AVR boards are used for real (§14, C3). Wi-Fi and Bluetooth are compiled in only when enabled with build flags. A sketch declares its functions and their commands:</p>
 <pre><code><span class="c">// firmware/sketches/combo-esp32/src/main.cpp (abridged)</span>
 <span class="k">#include</span> &lt;LabInt.h&gt;
 LabInt board(<span class="s">"1.2.0"</span>);
@@ -721,6 +724,7 @@ LabInt::Function&amp; thermo = board.function(<span class="s">"thermometer"</spa
   board.begin();
 }
 <span class="k">void</span> loop() { board.poll(); }   <span class="c">// never delay(): long work runs as a state machine, so STOP is always heard</span></code></pre>
+  <p><strong>The photometer (firmware 2.0, UNO R4 Minima)</strong> implements the function <code>photometer</code>: <code>LED &lt;power&gt;</code> (0–4095 on the DAC), <code>LED?</code>, <code>LEDCOLOR &lt;colour&gt;</code> (which LED is fitted, kept in EEPROM), <code>CFG &lt;ms&gt; &lt;gain&gt;</code>, <code>CFG?</code>, <code>READ &lt;n&gt;</code> (<code>BUSY</code>, then <code>EVT DONE</code> with the counts), <code>DIAG?</code> and <code>HW?</code>. It drives the TSL2591 with its own non-blocking driver, because the Adafruit library waits up to 840 ms inside each reading. The full reference is <code>firmware/PROTOCOL.md</code> §9.</p>
   <p>Sketches are built with <strong>PlatformIO</strong>. Each has a <code>platformio.ini</code> with one environment per supported board (<code>uno</code>, <code>esp32dev</code>, <code>nucleo_f446re</code>, <code>teensy41</code> …), and CI compiles all of them. The parser is unit-tested on the PC with PlatformIO's <code>native</code> environment. The library is also published as a zip, so it can be installed in the Arduino IDE.</p>
   <p><code>labdaemon firmware check &lt;port|host|ble-name&gt;</code> checks any board, over any link, against the spec. It runs every board-level command, measures reply latency, checks that unknown verbs give <code>ERR 1</code> and that <code>STOP</code> is accepted while idle, then runs each matching plugin's own firmware tests. In the Python test suite, the <code>WireSimulator</code> implements the same spec, so the spec is executable.</p>
 
@@ -1068,7 +1072,7 @@ emission_spectrum = <span class="s">"experiment:EmissionSpectrum"</span>
 <span class="k">def</span> upload(build: BuildResult, board: Board, *, on_output) -&gt; FirmwareInfo: ...</code></pre>
   <p>The same functions power <code>labdaemon firmware build</code> and <code>labdaemon firmware upload</code> on the command line. The LabInt library is always passed from LabDaemon's own installation, so a sketch compiles against the library version the app expects.</p>
   <ul>
-    <li><strong>Board type.</strong> The compiler's board identifier (FQBN) comes from the board's <code>ID?</code> reply through a built-in table: <code>uno</code> → <code>arduino:avr:uno</code>, <code>esp32</code> → <code>esp32:esp32:esp32</code>, <code>teensy41</code> → <code>teensy:avr:teensy41</code>, and so on. The teacher can override it, and the choice is saved with the board.</li>
+    <li><strong>Board type.</strong> The compiler's board identifier (FQBN) comes from the board's <code>ID?</code> reply through a built-in table: <code>uno-r4-minima</code> → <code>arduino:renesas_uno:minima</code>, <code>uno</code> → <code>arduino:avr:uno</code>, <code>esp32</code> → <code>esp32:esp32:esp32</code>, <code>teensy41</code> → <code>teensy:avr:teensy41</code>, and so on. The teacher can override it, and the choice is saved with the board.</li>
     <li><strong>Upload sequence.</strong>
       <ol>
         <li>Check leases. If an experiment is recording with the board, the upload is refused with the way out ("Stop the run in ‘Kinetics’ first"). Idle leases are paused.</li>
@@ -1124,10 +1128,12 @@ lux_formula = <span class="s">"(ch0 - ch1) * (1 - ch1/ch0) / (t * g / 408)"</spa
 spectral_response = { file = <span class="s">"charts/tsl2591_spectral.csv"</span>, x = <span class="s">"wavelength_nm"</span> }
 
 [[component]]
-id = <span class="s">"led-set"</span>
+id = <span class="s">"led"</span>
 role = <span class="s">"Light source"</span>
-part = <span class="s">"4 × 5 mm LEDs"</span>
+part = <span class="s">"5 mm LED on the 12-bit DAC (pin A0)"</span>
 [component.specs]
+colors = [<span class="s">"red"</span>, <span class="s">"orange"</span>, <span class="s">"green"</span>, <span class="s">"blue"</span>]   <span class="c"># the LEDs that can be fitted</span>
+max_power = { red = 4000, orange = 850, green = 900, blue = 850 }
 peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code></pre>
   <ul>
     <li><strong>Specs are data, not prose.</strong> Because the figures are structured, the plugin's own code uses them: the saturation check reads <code>full_scale_counts</code> instead of a hard-coded constant. The GUI and the Jupyter facade read the same file, so what the teacher sees and what the code does are always the same.</li>
@@ -1139,7 +1145,7 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
         <li>hints such as "switching to gain 428× would saturate at about 160 lx".</li>
       </ul>
       It runs on the board's worker thread like any other device call, and is refreshed with each live reading.</li>
-    <li><strong>The board confirms its parts.</strong> An optional function command, <code>HW?</code> (for example <code>OK sensor=tsl2591 leds=rgbo-5mm</code>), lets one plugin support variants, such as an older photometer built with a TSL2561. The plugin then shows the right sheet <em>and</em> uses the right lux formula. Without <code>HW?</code>, the plugin's default parts are assumed and marked "not confirmed by the board".</li>
+    <li><strong>The board confirms its parts.</strong> An optional function command, <code>HW?</code> (for example <code>OK sensor=tsl2591 led=red</code>), lets one plugin support variants, such as an older photometer built with a TSL2561. The plugin then shows the right sheet <em>and</em> uses the right lux formula. Without <code>HW?</code>, the plugin's default parts are assumed and marked "not confirmed by the board".</li>
     <li><strong>Datasheets.</strong> The link to the manufacturer's page is always shown. A PDF copy ships only where redistribution is allowed. A teacher can also attach their own copy, stored in the data folder or the shared folder set by the policy, so it works offline in class. PDFs open in a built-in viewer (Qt PDF, part of <code>PySide6-Addons</code>, which the Firmware view already needs), or in the system viewer.</li>
     <li><strong>Notes</strong> are short Markdown explanations per language, rendered on the tab. Wizard steps can link to a section, for example a ParametersStep's "What do gain and integration time do?".</li>
     <li><strong>Vernier sensors.</strong> Their sheets link to Vernier's product pages. Ranges and resolution come from what <code>godirect</code> reports about each sensor channel.</li>
@@ -1273,7 +1279,7 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
           <div style="border-right:1px solid var(--m-rule);padding:14px 12px;display:grid;gap:10px;align-content:start;background:var(--m-win)">
             <div class="row between"><b>Boards</b><span class="row"><span class="btn sm">Reconnect all</span><span class="btn sm pri">Add device…</span></span></div>
             <div class="box" style="overflow:hidden">
-              <div style="padding:7px 10px;background:var(--m-panel);border-bottom:1px solid var(--m-rule)"><b>Bench-3</b> <span class="m-sub">· Arduino Uno · USB COM3</span></div>
+              <div style="padding:7px 10px;background:var(--m-panel);border-bottom:1px solid var(--m-rule)"><b>Bench-3</b> <span class="m-sub">· UNO R4 Minima · USB COM3</span></div>
               <div style="padding:7px 10px 7px 22px;background:var(--m-sel-soft)"><b>Photometer</b><div class="m-sub"><span class="dot"></span>Ready · free</div></div>
             </div>
             <div class="box" style="overflow:hidden">
@@ -1297,15 +1303,15 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
           </div>
           <div class="main">
             <div class="row between">
-              <div><p class="m-h">Bench-3 · Photometer</p><span class="m-sub">plugin Photometer (TSL2591 + LED) · Arduino Uno · USB COM3 · serial 7F3A91C2 · firmware 2.0.0 · protocol 1</span></div>
+              <div><p class="m-h">Bench-3 · Photometer</p><span class="m-sub">plugin Photometer (TSL2591 + LED) · UNO R4 Minima · USB COM3 · serial 476B734F21FD · firmware 2.0.0 · protocol 1</span></div>
               <div class="row"><span class="pill ok">Ready</span><span class="btn">Disconnect</span></div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
               <div class="dock"><div class="dock-h"><span>Parameters</span><span>generated from the plugin <span class="co">3</span></span></div>
                 <div class="dock-b">
                   <div class="kv">
-                    <span>LED colour</span><span><span class="fld cmb" style="min-width:120px">red</span></span>
-                    <span>LED power</span><span class="row"><span class="fld" style="min-width:64px">1850</span><span class="m-sub">range 100 – 4000 for red</span></span>
+                    <span>LED colour (fitted)</span><span><span class="fld cmb" style="min-width:120px">red</span></span>
+                    <span>LED power</span><span class="row"><span class="fld" style="min-width:64px">1850</span><span class="m-sub">0 – 4000 for the red LED</span></span>
                     <span>Integration time</span><span><span class="fld cmb" style="min-width:120px">100 ms</span></span>
                     <span>Analog gain</span><span><span class="fld cmb" style="min-width:120px">25× (medium)</span> <span class="pill">advanced</span></span>
                   </div>
@@ -1354,7 +1360,7 @@ peak_wavelength_nm = { red = 625, orange = 605, green = 520, blue = 470 }</code>
           <table class="mtable">
             <thead><tr><th>Name</th><th>Board</th><th>Functions</th><th>Found on</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td><b>Bench-3</b></td><td>Arduino Uno</td><td>photometer</td><td>USB COM3</td><td><span class="pill ok">connected</span></td></tr>
+              <tr><td><b>Bench-3</b></td><td>UNO R4 Minima</td><td>photometer</td><td>USB COM3</td><td><span class="pill ok">connected</span></td></tr>
               <tr><td><b>Bench-5</b></td><td>ESP32</td><td>photometer, thermometer</td><td>Wi-Fi · Bluetooth −58 dBm</td><td><span class="pill ok">via Wi-Fi</span></td></tr>
               <tr class="cur"><td><b>Bench-7</b></td><td>ESP32</td><td>photometer</td><td>USB COM8 · Bluetooth −70 dBm</td><td>new</td></tr>
               <tr><td><b>Rail-1</b></td><td>Teensy 4.1</td><td>linear-actuator</td><td>USB COM5</td><td><span class="pill ok">connected</span></td></tr>
@@ -2029,7 +2035,7 @@ ModuleNotFoundError: No module named 'seabreeze'. This app build can only import
         </nav>
         <div class="main">
           <div class="row between">
-            <div><p class="m-h">Bench-3 · Photometer</p><span class="m-sub">plugin Photometer (TSL2591 + LED) · Arduino Uno · USB COM3 · firmware 2.0.0</span></div>
+            <div><p class="m-h">Bench-3 · Photometer</p><span class="m-sub">plugin Photometer (TSL2591 + LED) · UNO R4 Minima · USB COM3 · firmware 2.0.0</span></div>
             <span class="pill ok">Ready</span>
           </div>
           <div class="mtabs"><span>Settings and live reading</span><span class="on">Hardware</span><span>Commands</span></div>
@@ -2040,9 +2046,9 @@ ModuleNotFoundError: No module named 'seabreeze'. This app build can only import
               <div class="row"><span class="btn sm">Open datasheet (PDF)</span><span class="btn sm ghost">Manufacturer page ↗</span><span class="co">1</span></div>
             </div>
             <div class="comp">
-              <div class="row between"><h6>LED set · light source</h6><span class="pill">plugin default</span></div>
-              <span class="m-sub">4 × 5 mm LEDs, peak wavelength:</span>
-              <div><span class="swatch" style="background:#D6453D"></span>red 625 nm (in use) · <span class="swatch" style="background:#E08A1E"></span>orange 605 · <span class="swatch" style="background:#2E9E5B"></span>green 520 · <span class="swatch" style="background:#3B6FD8"></span>blue 470</div>
+              <div class="row between"><h6>LED · light source</h6><span class="pill ok">confirmed by board</span></div>
+              <span class="m-sub">One 5 mm LED on the 12-bit DAC (pin A0), drive level 0–4095</span>
+              <div><span class="swatch" style="background:#D6453D"></span>fitted: red, peak ≈ 625 nm, up to 4000 · <span class="m-sub">can also be orange, green or blue</span></div>
             </div>
           </div>
           <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px">
@@ -2069,7 +2075,7 @@ ModuleNotFoundError: No module named 'seabreeze'. This app build can only import
               </div>
             </div>
           </div>
-          <div class="dock" style="margin-top:12px"><div class="dock-h"><span>Spectral response and LED emission</span><span class="row" style="gap:12px"><span class="lg"><i style="background:var(--s-z)"></i>CH0</span><span class="lg"><i style="background:var(--s-x)"></i>CH1</span><span class="m-sub">dashed: LED peaks, solid: LED in use</span><span class="co">4</span></span></div>
+          <div class="dock" style="margin-top:12px"><div class="dock-h"><span>Spectral response and LED emission</span><span class="row" style="gap:12px"><span class="lg"><i style="background:var(--s-z)"></i>CH0</span><span class="lg"><i style="background:var(--s-x)"></i>CH1</span><span class="m-sub">solid: the fitted LED; dashed: LEDs that can be fitted</span><span class="co">4</span></span></div>
             <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;padding:8px">
               <div><svg viewBox="0 0 620 250" class="plot" role="img" aria-label="Relative response against Wavelength (nm)">
 <line class="grid" x1="50" x2="608" y1="212.0" y2="212.0"/>
@@ -2123,7 +2129,7 @@ ModuleNotFoundError: No module named 'seabreeze'. This app build can only import
     </div></div>
     <figcaption><span class="cap">Mockup 9 · Devices, Hardware tab</span>
       <ol class="notes">
-        <li><span class="co">1</span><span>Parts come from the plugin's <code>hardware.toml</code>. The board confirms them through <code>HW?</code>. This board's firmware reports only the sensor, so the LED set shows as the plugin default. The datasheet opens in the built-in PDF viewer when a copy is available, otherwise on the manufacturer's site.</span></li>
+        <li><span class="co">1</span><span>Parts come from the plugin's <code>hardware.toml</code>. The board confirms them through <code>HW?</code> (<code>sensor=tsl2591 led=red</code>): which LED is fitted is recorded on the board with <code>LEDCOLOR</code>. The datasheet opens in the built-in PDF viewer when a copy is available, otherwise on the manufacturer's site.</span></li>
         <li><span class="co">2</span><span>Key figures, including the exact formula and constants the plugin uses. Here CPL is worked out for the current settings.</span></li>
         <li><span class="co">3</span><span>The operating point is computed live from the current settings and readings, using the same <code>full_scale_counts</code> the saturation check uses. The hint explains what a setting change would do.</span></li>
         <li><span class="co">4</span><span>The spectral response with the LED peaks shows what each colour actually measures. The curve shapes in this mockup are illustrative; the plugin ships curves digitised from the datasheet.</span></li>
@@ -2312,8 +2318,16 @@ update_check = false</code></pre>
 <section id="roadmap">
   <h2><span class="num">13</span>Roadmap</h2>
   <div class="mile">
-    <div><b>M0</b><div><p><strong>Skeleton and protocol.</strong> Core contracts, registry, events, boards and functions, <code>BoardWorker</code>, <code>WireClient</code>, and <code>PROTOCOL.md</code> v1 with its Python <code>WireSimulator</code>. Settings and the policy merge. A simulated photometer and the main window with the Devices view, in English with the translation pipeline already wired.</p><p class="exit">Done when a simulated photometer connects over the simulated wire protocol and its live reading updates in the status bar and the Devices view.</p></div></div>
-    <div><b>M1</b><div><p><strong>Photometer parity.</strong> The <code>LabInt</code> C++ library on AVR, photometer firmware 2.0 and reflashing the boards, <code>firmware check</code>, the TSL2591 plugin with its hardware sheet, the absorbance experiment in both modes, the calibration library, linear fits with uncertainties, and <code>.labint</code> sessions.</p><p class="exit">Done when a complete absorbance lab runs on real hardware over USB on Windows and on Linux.</p></div></div>
+    <div><b>M0</b><div><p><span class="tag dec">Done</span> <strong>Skeleton and protocol.</strong> Core contracts, registry, events, boards and functions, <code>BoardWorker</code>, <code>WireClient</code>, and <code>PROTOCOL.md</code> v1 with its Python <code>WireSimulator</code>. Settings and the policy merge. A simulated photometer and the main window with the Devices view, in English with the translation pipeline already wired.</p><p class="exit">Done when a simulated photometer connects over the simulated wire protocol and its live reading updates in the status bar and the Devices view.</p></div></div>
+    <div><b>M1</b><div><p><span class="tag dec">Nearly done</span> <strong>Photometer parity.</strong> Done: the <code>LabInt</code> C++ library, photometer firmware 2.0 flashed on the UNO R4 Minima, <code>firmware check</code> (11 of 11 checks pass), USB connection and scanning, the TSL2591 plugin with its hardware sheet, the absorbance experiment in guided and expert mode, the calibration library, linear fits with uncertainties, and <code>.labint</code> sessions. CI passes on Windows and Ubuntu.</p><p class="exit">Still to do: a complete absorbance lab with real solutions, on real hardware, on Windows and on Linux.</p></div></div>
+    <div><b>Next</b><div><p><strong>Multi-LED photometer board.</strong> A photometer with several LEDs (for example red, orange, green and blue) that the firmware can switch between, instead of swapping LEDs by hand.</p>
+      <ul>
+        <li><strong>Hardware:</strong> one constant-current driver fed by the DAC, with one switch per LED so that only one is lit, so the drive level stays a DC current rather than PWM, which would beat with the sensor's integration time. The LEDs sit on a common holder aimed at the cuvette.</li>
+        <li><strong>Protocol:</strong> backward compatible. <code>HW?</code> reports <code>leds=red,orange,green,blue</code> instead of <code>led=…</code>, and <code>LED &lt;power&gt; [colour]</code> takes an optional colour. Single-LED boards keep working unchanged.</li>
+        <li><strong>Plugin:</strong> the same photometer plugin; the LED colour becomes a real setting, and calibrations can restore it on their own.</li>
+        <li><strong>New in the experiments:</strong> choosing the LED that the sample absorbs most, automatically, and a four-point absorption spectrum.</li>
+      </ul>
+      <p class="exit">Done when the absorbance experiment picks the best LED by itself and a calibration restores the LED colour without anyone touching the hardware.</p></div></div>
     <div><b>M2</b><div><p><strong>Kinetics, data and leases.</strong> The reaction kinetics experiment with first- and second-order fits, the Fit dock, the Data view, CSV presets, experiment tabs with leases, the student lock, and the Hardware tab with its live operating point.</p></div></div>
     <div><b>M3</b><div><p><strong>Field profile.</strong> Stepper firmware on Teensy with asynchronous <code>MOVE</code>, <code>STOP</code> and limit events; the stepper plugin; the Vernier plugin over USB and Bluetooth; the field profile experiment with immediate stop and solenoid and dipole fits.</p></div></div>
     <div><b>M4</b><div><p><strong>Release.</strong> Windows installer (all users or per user, silent switches), <code>.deb</code> and AppImage, the machine policy, the complete Italian translation, the user guide in English and Italian, and "Update firmware…" with precompiled reference firmware (level 1 of §7.3).</p></div></div>
@@ -2324,17 +2338,17 @@ update_check = false</code></pre>
 
 <section id="questions">
   <h2><span class="num">14</span>Open questions and early checks</h2>
-  <p>No design questions are open. These points should be confirmed in M0, before much code depends on them:</p>
+  <p>No design questions are open. Early checks and what they found so far:</p>
   <ol class="qs">
-    <li id="c1"><b>C1</b><div><strong>Python 3.14 wheels</strong><p>Install PySide6-Essentials, pyqtgraph, numpy, scipy, pyserial, bleak, zeroconf and godirect on Python 3.14, on Windows and on Linux, and build a PyInstaller smoke test.</p></div></li>
+    <li id="c1"><b>C1</b><div><strong>Python 3.14 wheels</strong> <span class="tag dec">Mostly done</span><p>Checked in M0: every planned dependency resolves to Python 3.14 wheels on Windows and Linux. PySide6 6.10+ on Linux needs glibc 2.34 or newer (Ubuntu 22.04+). The PyInstaller smoke test is still to do.</p></div></li>
     <li id="c2"><b>C2</b><div><strong>Vernier over Bluetooth</strong><p>Connect a Go Direct sensor through godirect's Bluetooth support on both platforms, and check that it can share the Bluetooth adapter with bleak scanning for ESP32 boards.</p></div></li>
-    <li id="c3"><b>C3</b><div><strong>Memory on the Uno</strong><p>Measure how much of the Uno's 2 KB of RAM the LabInt library and the photometer sketch use together. If the margin is thin, the combined-board and event features get compile-time switches.</p></div></li>
+    <li id="c3"><b>C3</b><div><strong>Memory on small boards</strong> <span class="tag dec">Measured</span><p>M1: the photometer runs on the UNO R4 (20 % of 32 KB). On a classic Uno, a minimal LabInt sketch uses 1 287 of 2 048 bytes (62 %): it fits, but the library's strings move to flash before AVR boards are used for real.</p></div></li>
     <li id="c4"><b>C4</b><div><strong>Wi-Fi in the lab</strong><p>With one ESP32: mDNS discovery on the lab PCs' network, connecting by IP from another network, and the Windows firewall prompt in a per-user install.</p></div></li>
     <li id="c5"><b>C5</b><div><strong>Monaco and the Arduino language server</strong><p>Run <code>qtmonaco</code> on PySide6 with <code>arduino-language-server</code> and <code>clangd</code> from Arduino IDE 2, on an ESP32 sketch that uses LabInt, on Windows and on Linux. Check completion, hover help and live errors through the WebSocket bridge. Not strictly needed in M0, but it should be settled before M6 is planned in detail.</p></div></li>
     <li id="c6"><b>C6</b><div><strong>Installer size</strong><p>Measure how much the embedded web engine (<code>PySide6-Addons</code>) adds to the Windows installer and the AppImage. If it is too much for school PCs, the Firmware view's editor can become a separate optional download.</p></div></li>
   </ol>
   <div class="note"><p><strong>Answered questions.</strong> Draft 0.2: Q1 firmware, Q2 stopping, Q4 languages, Q6 scipy. Draft 0.3: Q3, Q5, Q7–Q13. Draft 0.4: Q14 Wi-Fi addressing, Q15 package name, Q16 installer. All of them are in the decisions table in §0.</p></div>
-  <p class="foot-note" style="margin-top:28px">Draft 0.7 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
+  <p class="foot-note" style="margin-top:28px">Draft 0.8 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
 </section>
 </main>
 </div>
