@@ -1,15 +1,11 @@
 import time
-import statistics
-import serial
-import serial.tools.list_ports
-import ipywidgets as widgets
-import ipysheet
-
+import serial # type: ignore
+from loguru import logger
 
 
 class Microcontroller:
 
-    def __init__(self,com="/dev/ttyACM0",*,baudrate=115200,timeout=0.1):
+    def __init__(self,com="/dev/ttyACM0",*,baudrate=9600,timeout=0.1):
         self.__device=None
         self.__com=com
         self.__baud=baudrate
@@ -28,7 +24,7 @@ class Microcontroller:
         return handshake_response
 
        
-    def connect(self,*,com="/dev/ttyACM0",baudrate=115200,timeout=1):
+    def connect(self,*,com="/dev/ttyACM0",baudrate=9600,timeout=1):
         self.__com=com
         self.__baud=baudrate
         self.__timeout=timeout
@@ -54,23 +50,34 @@ class Microcontroller:
                 break
             
     
-    def send_command(self,command):
+    def send_command(self,command,display=True):
         timeout = self.__device.timeout
-        out_message=''
+        out_message=[]
         self.__device.timeout = 2
         self.__device.write(command.encode())
         while (self.__device.in_waiting < 0):
             pass
         
+    
+        
         while True:
             response= self.__device.read_until()
-            time.sleep(0.1)
+            time.sleep(0.01)
             if  response.decode().strip()=='executed':
                 break
-            out_message+=response.decode().strip()
-            if len(response.decode().strip())>0:
-                print(response.decode().strip())
-            else:
-                print("- ")
+                
+            
+            out_message.append(response.decode().strip())
+            
+            if display:    
+                if len(response.decode().strip())>0:
+                    print(response.decode().strip())
+                else:
+                    print("- ")
         self.__device.timeout = timeout
+        logger.debug(out_message)
+        if len(out_message)>1:
+            out_message="\n".join(out_message)
+        else:
+            out_message=out_message[0]
         return out_message

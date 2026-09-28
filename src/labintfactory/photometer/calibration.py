@@ -1,11 +1,17 @@
 import ipywidgets as widgets # type: ignore
 import ipysheet # type: ignore
 import matplotlib.pyplot as plt
+from IPython.display import display
+from labintfactory.utils.interface_widgets import AButton,AFileUpload,AFloatText
 from sklearn.linear_model import LinearRegression # type: ignore
 import numpy as np
 import json
 import datetime
 import codecs
+
+from loguru import logger
+
+logger.disable(__name__)
 
 
 class CalibrationWidget:
@@ -72,17 +78,17 @@ class CalibrationWidget:
         lines_data=[reg1.coef_[0][0],reg1.intercept_[0]]
         self.photometer.calibration_data=lines_data
         
-        print(lines_data)
+        logger.info(lines_data)
         
         #plot data
                
-        ax.set_xlim(min(molarity_data), max(molarity_data)+1)
-        ax.set_ylim(min(absorbance_data),max(absorbance_data)+1)
+        ax.set_xlim(0.9*min(molarity_data), 1.1*max(molarity_data))
+        ax.set_ylim(0.9*min(absorbance_data),1.1*max(absorbance_data))
         self.graphs['scatter'].set_data(molarity_data,absorbance_data)
         self.graphs['line'].set_data(molarity_data, reg1.predict(np.array([entry for entry in molarity_data]).reshape(-1, 1)))
         with self.graph_output:
                     self.graph_output.clear_output(wait=True)
-                    display(self.graphs['figure'])
+                    display(current_fig)
         return lines_data
 
     def _zeroth_illuminance_widget(self):
@@ -90,22 +96,25 @@ class CalibrationWidget:
                 light=self.photometer.get_light_reading(n_samples=self.samples.value,int_time=self.integration_time.value)
                 illuminance.value=light[0]
                 self.photometer.zil=illuminance.value
-                
-            measure_button = widgets.Button(
+            
+            measure_button=AButton(
                 description='Get zeroth illuminance',
-                disabled=True,
-                button_style='', 
+                disabled=True, 
                 tooltip='Get illuminance reading at solute zero molarity',
-                icon='sun'
-            )
+                icon='sun',
+                style='large',
+                callback=get_reading)
+            
+                
+           
                        
             illuminance=widgets.FloatText(
                     value=0.0,
                     description='Illuminance (Lux):',
                     disabled=True
                 )
-            illuminance.style.description_width='150px'
-            measure_button.on_click(get_reading)
+          
+            
             self.__subwidgets.append(measure_button)
             return {'button':measure_button,'value':illuminance}
 
@@ -131,7 +140,7 @@ class CalibrationWidget:
                                   column_headers=["Molarity (mol/L)","Illuminance (Lux)", "Transmittance", "Absorbance"],
                                   row_headers=False,
                                   )
-        cells=[[ipysheet.cell(i,j,value=0.0,read_only=True) for j in range(n_columns)] for i in range(n_rows)]
+        cells=[[ipysheet.cell(i,j,value=0.0,read_only=True,numeric_format="0.00000000") for j in range(n_columns)] for i in range(n_rows)]
         cells_data=[[cells[i][j].value for j in range(n_columns)] for i in range(n_rows)]
         
         for i in range(n_rows):
@@ -186,22 +195,24 @@ class CalibrationWidget:
       
         
     def _sl_calibration_widget(self):
-            save_button = widgets.Button(
+            
+            save_button = AButton(
                 description='Save calibration',
                 disabled=False,
-                button_style='', 
+                style='large', 
                 tooltip='Save calibration in json format',
-                icon='save'
+                icon='save',
+                callback=self._save_calibration
             )
-
-            load_button=widgets.FileUpload(
-                    accept='*.json',  
+           
+            load_button=AFileUpload(
+                    description="Load calibration",
+                    callback=self._load_calibration,
+                    accept='*.json',
                     multiple=False,
-                    description="Load calibration"
+                    style='large'
                 )
-                   
-            save_button.on_click(self._save_calibration)
-            load_button.observe(self._load_calibration, names='value')
+           
             self.__subwidgets.append(save_button)
             self.__subwidgets.append(load_button)
             return {'save_button':save_button, 'load_button':load_button}
@@ -251,5 +262,10 @@ class CalibrationWidget:
                                    self.zeroth_illuminance['value'],
                                    self.__save_load_dialog['save_button'],
                                    self.__save_load_dialog['load_button']])
+        
+        
+        
         calibration2=widgets.VBox([self.data_sheet['widget'],self.graph_output])
-        return widgets.VBox([calibration1,calibration2])
+        
+        calibration_accordion = widgets.Accordion(children=[ calibration2], titles=('Calibration graph',))
+        return widgets.VBox([calibration1,calibration_accordion])

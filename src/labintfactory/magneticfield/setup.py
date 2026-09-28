@@ -1,4 +1,4 @@
-import ipywidgets as widgets
+import ipywidgets as widgets # type: ignore
 
 from labintfactory.generic.setup import SetupWidget
 from labintfactory.interfaces.vernier.data_interface import InstrumentsInterface
@@ -38,5 +38,5 @@ class MagneticSetupWidget(SetupWidget):
         return hall_connect_button
     
     def render_interface(self):
-           interface=widgets.HBox([self.com_port,self.microcontroller_connection,self.handshake,self.hall_sensor])
+           interface=widgets.HBox([self.com_port[0],self.com_port[1],self.microcontroller_connection,self.handshake,self.hall_sensor])
            return interface

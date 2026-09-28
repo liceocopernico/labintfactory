@@ -1,7 +1,7 @@
-import serial
-import serial.tools.list_ports
-import ipywidgets as widgets
-import ipysheet
+import serial # type: ignore
+import serial.tools.list_ports # type: ignore
+import ipywidgets as widgets # type: ignore
+import ipysheet # type: ignore
 from labintfactory.interfaces.microcontroller import Microcontroller
 from labintfactory.utils.interface_widgets import AButton,ADropdown
 
@@ -46,8 +46,10 @@ class SetupWidget:
 
     def _com_port_widget(self):
         def handle_com_change(change):
-            #self.__microcontroller.disabled=False
+            
+            self.__microcontroller_connection.disabled=False
             print(change)
+            
         com_ports=serial.tools.list_ports.comports()
         
         com_port=ADropdown(options=[p.device for p in com_ports if "USB" in p.device or "ACM" in p.device or "COM" in p.device],
@@ -56,7 +58,12 @@ class SetupWidget:
                             style='large',
                             callback=handle_com_change)
         
-        return com_port
+        com_speed=ADropdown(options=['9600','115200'],
+                            description='Serial speed',
+                            disabled=False,
+                            style='large',)
+        
+        return [com_port,com_speed]
     
     
     def _handshake_widget(self):
@@ -74,7 +81,7 @@ class SetupWidget:
 
     def _microcontroller_connection_widget(self):
             def connect_microcontroller(b):           
-                if self.microcontroller.connect(com=self.com_port.value, baudrate=115200, timeout=1):
+                if self.microcontroller.connect(com=self.com_port[0].value, baudrate=int(self.com_port[1].value), timeout=1):
                     with self.output:
                         print("Microcontroller connected")
                         self.handshake.disabled=False
@@ -85,16 +92,16 @@ class SetupWidget:
                         return
 
             microcontroller_connect_button=AButton(description='Microcontroller',
-                                                    disabled=False,
+                                                    disabled=True,
                                                     tooltip='Start Microcontroller connection',
                                                     icon='plug',
                                                     style='large',
                                                     callback=connect_microcontroller)
             
-            if len(self.com_port.options)==0: microcontroller_connect_button.disabled=True
+            if len(self.com_port[0].options)==0: microcontroller_connect_button.disabled=True
 
             return microcontroller_connect_button
     
     def render_interface(self):
-           interface=widgets.HBox([self.com_port,self.microcontroller_connection,self.handshake])
+           interface=widgets.HBox([self.com_port[0],self.com_port[1],self.microcontroller_connection,self.handshake])
            return interface

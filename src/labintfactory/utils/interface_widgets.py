@@ -1,6 +1,45 @@
-import ipywidgets as widgets
+import ipywidgets as widgets # type: ignore
+
+class AText(widgets.Text):
+    def __init__(self,*,value,placeholder,description,disabled=False,callback=None):
+        super().__init__(value=value,
+                         placeholder=placeholder,
+                         description=description,
+                         disabled=disabled)
+        if callback:
+            self.observe(callback, names='value')
 
 
+class AFloatText(widgets.FloatText):
+    def __init__(self,*,value,description,disabled=False,callback=None):
+        super().__init__(value=value,
+                         description=description,
+                         disabled=disabled)
+        if callback:
+            self.observe(callback, names='value')
+
+
+class AFileUpload(widgets.FileUpload):
+    def __init__(self,*,description,accept='*.json',multiple=False,callback=None,style='default'):
+            super().__init__(description=description,
+                             accept=accept,
+                             multiple=multiple)
+            self.button_style='primary'
+            
+            match style:
+                case 'default':
+                    self.style=dict(font_weight='bold',
+                                    text_color='white',)
+                    self.button_style='primary'
+                case 'large':
+                    self.style=dict(font_weight='bold',
+                                    text_color='white',
+                                    description_width='150px')
+                    self.button_style='primary'
+            
+            
+            if callback:
+                    self.observe(callback, names='value')
 
 class AIntSlider(widgets.IntSlider):
     def __init__(self,*,value,min_value,max_value,step=1,description='',style='default',callback=None,disabled=False):
@@ -69,16 +108,12 @@ class AFloatSlider(widgets.FloatSlider):
             if self.setup_callback:
                 self.setup_callback()
 
-
-
-
-
 class AButton(widgets.Button):
     def __init__(self,*,description,style='default',tooltip='',icon='plug',callback=None,disabled=True):
         super().__init__(description=description,
                          disabled=disabled,
                          button_style='', 
-                         tooltip='Hall Sensor informations',
+                         tooltip=tooltip,
                          icon=icon)
 
         match style:
@@ -89,7 +124,7 @@ class AButton(widgets.Button):
             case 'large':
                 self.style=dict(font_weight='bold',
                                  text_color='white',
-                                 description_width='100px')
+                                 description_width='150px')
                 self.button_style='primary'
                
                 
@@ -147,5 +182,6 @@ class ASelectMultiple(widgets.SelectMultiple):
                     self.observe(callback, names='value')
 
     def update(self):
-            if self.__options_callback:
+            print(self.options)
+            if self.__options_callback and not self.options:
                 self.options=self.__options_callback()

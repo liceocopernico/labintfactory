@@ -13,9 +13,15 @@ class LinearActuator:
                          'stop_status':{'description':'Stop status','tooltip':'Get stop status','command':'e','icon':'stop','display':True},
                          'max_pos':{'description':'Max pos','tooltip':'Get Max Position','command':'a','icon':'maximize','display':True},
                          'move_pos':{'description':'Move to position','tooltip':'Move to  position','command':'u','icon':'maximize','display':False},
-                         'clear_buffer':{'description':'Clear buffer','tooltip':'Clear microcontroller buffer','command':'y','icon':'snowplow','display':True}}
+                         'clear_buffer':{'description':'Clear buffer','tooltip':'Clear microcontroller buffer','command':'y','icon':'snowplow','display':True},
+                         'is_calibrated':{'description':'Calibration status','tooltip':'Check calibration status','command':'r','icon':'maximize','display':False},
+                         'print_data':{'description':'Display conf','tooltip':'Display actuator status','command':'j','icon':'info','display':True},
+                         'set_speed':{'description':'Set speed','tooltip':'Set actuator speed','command':'s','icon':'maximize','display':False},
+                         'get_speed':{'description':'Get speed','tooltip':'Get actuator speed','command':'i','icon':'maximize','display':False},
+                         'disable':{'description':'Disable motor','tooltip':'Disable motor ','command':'n','icon':'maximize','display':False},
+                         'enable':{'description':'Enable motor','tooltip':'Enable motor ','command':'o','icon':'maximize','display':False}}
         
-        print(self.__microcontroller)
+        
         if self.__microcontroller.connected:
             self.__max_ticks=int(self.send_command('max_pos'))
         else:
@@ -24,6 +30,7 @@ class LinearActuator:
     @property
     def commands(self):
         return self.__commands
+    
     @property
     def resolution(self):
         return self.__resolution
@@ -35,7 +42,14 @@ class LinearActuator:
             return  self.resolution*int(self.send_command('get_pos'))
         else:
             return 0
-        
+    
+    @property
+    def is_connected(self):
+        if self.__microcontroller.connected:
+            return bool(self.send_command('is_calibrated'))
+        else:
+            return False
+    
 
     @property
     def max_position(self):
@@ -47,6 +61,8 @@ class LinearActuator:
         else:
             return 0
 
+    
+    
     def get_ticks(self):
         return {'current_ticks':int(self.send_command('get_pos')),'max_ticks':int(self.send_command('max_pos'))}
     

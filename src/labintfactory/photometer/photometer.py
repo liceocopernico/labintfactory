@@ -1,9 +1,11 @@
-import time
-
-
-from labintfactory.interfaces.microcontroller import Microcontroller
+from loguru import logger
 import statistics
 import math
+
+logger.disable(__name__)
+
+
+
 class Photometer:
     
     TSL2561_CLIPPING_402MS:int=65000
@@ -17,6 +19,32 @@ class Photometer:
         self.__is_calibrated=False
         self.__calibration_data=None
         self.__led_in_range=False
+        self.__int_time=100
+        self.__gain=1
+        
+
+    @property
+    def int_time(self):
+        
+        return self.__int_time
+    
+    @int_time.setter
+    def int_time(self,value):
+        self.microcontroller.send_command(f"t{value}")
+        self.__int_time=value
+
+
+    @property
+    def gain(self):
+       
+        return self.__gain
+    
+    @gain.setter
+    def gain(self,value):
+        self.microcontroller.send_command(f"g{value}")
+        self.__gain=value
+
+
 
     @property
     def led_in_range(self):
@@ -57,6 +85,10 @@ class Photometer:
     def microcontroller(self):
         return self.__microcontroller
 
+    def read_photometer_data(self):
+        self.__int_time=int(self.microcontroller.send_command('a'))
+        self.__gain=int(self.microcontroller.send_command('q'))
+
     
     def transmittance(self):
         try:
@@ -78,12 +110,23 @@ class Photometer:
         
         data=raw_line.rstrip().split("|")
         
-        if len(data)!=2:
+        if len(data)!=3:
             raise ValueError(f"Incorrect data type, received {data}")
         else:
-            return int(data[0]),int(data[1])
+            return int(data[0]),int(data[1]),float(data[2])
     
     def _calculateLux(self,broadband:int,ir:int):
+        
+        TSL2591_LUX_DF=408.0
+        cpl = float(self.int_time * self.gain) / TSL2591_LUX_DF
+        try:
+            lux = (float(broadband) - float(ir)) * (1.0- float(ir) /float(broadband)) / cpl
+        except ZeroDivisionError:
+            logger.error("Not enough light")
+            return -1.0
+        return  round(lux,6)
+    
+    def _calculateLux_2561(self,broadband:int,ir:int):
         clipThreshold = self.TSL2561_CLIPPING_402MS
         chScale = (1 << self.TSL2561_LUX_CHSCALE)
         channel0:int = (broadband * chScale) >> self.TSL2561_LUX_CHSCALE
@@ -126,13 +169,14 @@ class Photometer:
                 raw=self.microcontroller.send_command('r')
             
                 try:
-                    broadband,ir=self._parse_raw_line(raw)
+                    broadband,ir,lux=self._parse_raw_line(raw)
                 except ValueError as e:
+                    logger.error(e)
                     continue
                 reading+=1
                 broadband_readings.append(broadband)
                 ir_readings.append(ir)
-                time.sleep(1.5*int_time/1000)
+                #time.sleep(1.5*int_time/1000)
         
         lux_data=self._calculateLux(int(statistics.mean(broadband_readings)),int(statistics.mean(ir_readings)))
         saturated=True if int(statistics.mean(broadband_readings))>threshold or int(statistics.mean(ir_readings))> threshold else False
@@ -140,3 +184,6 @@ class Photometer:
         self.__last_reading=lux_data
         
         return (lux_data,int(statistics.mean(broadband_readings)),int(statistics.mean(ir_readings)),saturated)
+    
+    
+    

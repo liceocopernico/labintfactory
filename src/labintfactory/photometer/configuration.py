@@ -1,6 +1,4 @@
 import ipywidgets as widgets # type: ignore
-import ipysheet # type: ignore
-
 from labintfactory.photometer.photometer import Photometer
 from labintfactory.utils.interface_widgets import AButton,ADropdown,AIntSlider
 
@@ -12,6 +10,7 @@ class ConfigurationWidget:
         self.__photometer=Photometer(microcontroller)
         self.__samples=self._samples_widget()
         self.__integration_time=self._integration_time_widget()
+        self.__gain=self._gain_widget()
         self.__leds=self._leds_widget()
         self.__power=self._power_widget()
         self.__set_power=self._set_power_widget()
@@ -47,6 +46,10 @@ class ConfigurationWidget:
     @property
     def integration_time(self):
         return self.__integration_time
+    
+    @property
+    def gain(self):
+        return self.__gain
     
     @property
     def samples(self):
@@ -113,20 +116,38 @@ class ConfigurationWidget:
         return {'leds_data':available_leds,'widget':leds}
     
     def _integration_time_widget(self):
-        integration_time=ADropdown(options=[13,102,402],
-                                   value=402,
+        def set_int_time(change):
+            self.photometer.int_time=change.new
+            
+        integration_time=ADropdown(options=[100,200,300,400,500,600],
+                                   value=100,
                                     description='Integration time (ms):',
                                     disabled=True,
-                                    style='large')
+                                    style='large',
+                                    callback=set_int_time)
         
-        
+        self.__subwidgets.append(integration_time)
         return integration_time
     
+    def _gain_widget(self):
+        def set_gain(change):
+            self.photometer.gain=change.new
+            print(change.new)
+        gain=ADropdown(options=[1,25,428,9876],
+                                   value=25,
+                                    description='Analog gain:',
+                                    disabled=True,
+                                    style='large',
+                                    callback=set_gain)
+        
+        self.__subwidgets.append(gain)
+        return gain
 
     def _samples_widget(self):
         
         samples=ADropdown(options=range(1,16),
                           description='Samples (number):',
+                          value=1,
                           disabled=True,
                           style='large')
         
@@ -141,13 +162,13 @@ class ConfigurationWidget:
                 output_data.style.text_color='red'
                 output_data.value=f"Sensor is saturated, lower led power raw visible: {light[1]} raw ir: {light[2]}"     
             else:                
-                if light[0]==0:
+                if light[0]<=0:
                     output_data.style.text_color='red'
                     output_data.value=f"No light or light too dim, raise led power"
                                 
                 else:
                     output_data.style.text_color='green'
-                    output_data.value=f"Lux: {light[0]} raw visible: {light[1]} raw ir: {light[2]}"
+                    output_data.value=f"Lux: {round(light[0],4)} raw visible: {light[1]} raw ir: {light[2]}"
                     self.photometer.led_in_range=True 
                     
                     
@@ -171,6 +192,9 @@ class ConfigurationWidget:
 
     def enable(self):
         self.power.value=self.photometer.get_led_power()
+        self.photometer.read_photometer_data()
+        self.integration_time.value=self.photometer.int_time
+        self.gain.value=self.photometer.gain
         for widget in self.__subwidgets:
             widget.disabled=False
 
@@ -180,7 +204,7 @@ class ConfigurationWidget:
             
         
     def render_interface(self):
-        configuration_1=widgets.HBox([self.samples,self.integration_time,self.leds['widget'],self.power,self.set_power])
+        configuration_1=widgets.HBox([self.samples,self.integration_time,self.gain,self.leds['widget'],self.power,self.set_power])
         configuration_2=widgets.HBox([self.get_reading['button'],self.get_reading['data']])
         return widgets.VBox([configuration_1,configuration_2])
         

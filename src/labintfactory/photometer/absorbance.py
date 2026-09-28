@@ -1,16 +1,4 @@
-import time
-import serial
-import serial.tools.list_ports
 import ipywidgets as widgets # type: ignore
-import ipysheet # type: ignore
-import matplotlib.pyplot as plt
-import math
-from sklearn.linear_model import LinearRegression # type: ignore
-import numpy as np
-
-
-from labintfactory.interfaces.microcontroller import Microcontroller
-from labintfactory.photometer.photometer import Photometer
 from labintfactory.generic.setup import SetupWidget
 from labintfactory.utils.debug import OutputWidget
 from labintfactory.photometer.configuration import ConfigurationWidget
@@ -43,13 +31,10 @@ class Absorbance:
                             self.__calibration.disable()
                     case 3:
                         self.__measure.show_graph()
-                        if self.__configuration.photometer.is_calibrated:
-                            self.__measure.enable()
-                        else:
-                            self.__measure.disable()
+                        self.__measure.update()
                         
                     
-        tab_contents = ['Setup','Configuration','Calibration','Measure','Debug output']
+        tab_contents = ['Setup','Configuration','Calibration','Measure','Sensor output']
         
        
         setup=self.__setup.render_interface()
