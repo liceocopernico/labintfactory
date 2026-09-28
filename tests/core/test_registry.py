@@ -35,9 +35,9 @@ def make_plugin(root, folder, *, plugin_id="thermo", api=1, device_id="test_ther
 
         [devices]
         {device_id} = "device:Thermometer"
-    """))
-    (d / "device.py").write_text(body if body is not None else GOOD_DEVICE.format(id=device_id))
-    (d / "helpers.py").write_text('CELSIUS = "°C"\n')
+    """), encoding="utf-8")
+    (d / "device.py").write_text(body if body is not None else GOOD_DEVICE.format(id=device_id), encoding="utf-8")
+    (d / "helpers.py").write_text('CELSIUS = "°C"\n', encoding="utf-8")  # non-ASCII on purpose (Windows)
     return d
 
 

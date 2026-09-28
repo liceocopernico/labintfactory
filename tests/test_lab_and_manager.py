@@ -12,6 +12,7 @@ def test_lab_facade(settings):
         board = lab.simulate("tsl2591_photometer")
         assert board.functions == ["photometer"]
         photo = board["photometer"]
+        photo.set_output("red", 1850)
         assert photo.read_light().lux > 400
         assert len(lab.boards()) == 1
     assert lab.boards() == []
@@ -23,6 +24,7 @@ def test_manager_polls_and_reports_state(manager):
     manager.device_state.connect(lambda key, state: states.append(state))
     board = manager.simulate("tsl2591_photometer")
     key = board.devices["photometer"].key
+    manager.proxy(key).set_parameter("led_power", 1850)
     assert manager.state(key) == DeviceState.READY
     deadline = time.monotonic() + 3
     while len(samples) < 2 and time.monotonic() < deadline:

@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Education",
 ]
-# Only what M0 uses; later milestones add pyserial, scipy, bleak, zeroconf, godirect, qtmonaco …
+# Later milestones add scipy, bleak, zeroconf, godirect, qtmonaco …
 dependencies = [
     "PySide6-Essentials>=6.9",
     "pyqtgraph>=0.14",
@@ -28,6 +28,7 @@ dependencies = [
     "platformdirs>=4.3",
     "loguru>=0.7.3",
     "tomli-w>=1.2",
+    "pyserial>=3.5",
 ]
 
 [project.urls]
@@ -39,6 +40,7 @@ labdaemon = "labdaemon.__main__:main"
 
 # Built-in plugins. Folder plugins use the same table shape in their plugin.toml.
 [project.entry-points."labdaemon.transports"]
+serial = "labdaemon.transports.serial:SerialTransport"
 simulated = "labdaemon.transports.simulated:SimulatedTransport"
 
 [project.entry-points."labdaemon.devices"]
@@ -56,6 +58,10 @@ dev = [
 testpaths = ["tests"]
 qt_api = "pyside6"
 addopts = "-ra"
+# Text I/O without an explicit encoding breaks on Windows (cp1252). CI sets PYTHONWARNDEFAULTENCODING=1
+# so these warnings appear, and this filter turns them into failures.
+filterwarnings = ["error::EncodingWarning"]
+markers = ["hardware: needs a real board (set LABDAEMON_TEST_PORT)"]
 
 [tool.ruff]
 line-length = 120

@@ -17,6 +17,7 @@ from labdaemon.core.i18n import N_, _
 from labdaemon.core.parameters import Parameter, ParameterSet
 
 if TYPE_CHECKING:
+    from labdaemon.core.conformance import Check
     from labdaemon.transports.simulated import WireSimulator
     from labdaemon.transports.wire import FunctionChannel
 
@@ -58,6 +59,8 @@ class Device(ABC):
     links: ClassVar[frozenset[str]] = frozenset({"serial", "tcp", "ble", "simulated"})
     simulated: ClassVar[Callable[[], WireSimulator] | None] = None  # builds a simulated board
     gui: ClassVar[str | None] = None  # "pkg.module:Panel", imported only by the GUI
+    # Extra firmware checks for `labdaemon firmware check`: (channel) -> [Check, …]
+    firmware_checks: ClassVar[Callable[[FunctionChannel], list[Check]] | None] = None
     api: ClassVar[int] = 1
 
     def __init__(self, wire: FunctionChannel, board: BoardInfo) -> None:

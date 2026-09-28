@@ -50,7 +50,7 @@ A board may send these lines at any time, between replies:
 
 | Line | Meaning |
 |---|---|
-| `EVT BOOT proto=1` | The board (re)started. Boards that reset when the USB port opens send it first, and the host waits for it (at most 3 s). |
+| `EVT BOOT proto=1` | The board (re)started. Boards that reset when the USB port opens send it first; the host waits for it (at most 3 s) when `PING` gets no answer. |
 | `EVT DONE fn=… cmd=… [key=value …]` | An operation finished; the fields are its result. |
 | `EVT STOPPED fn=… cmd=… [key=value …]` | An operation was stopped by `STOP`. |
 | `EVT LIMIT fn=… side=… [key=value …]` | An operation hit a limit (for example a limit switch). |
@@ -97,26 +97,37 @@ Boards without a hardware serial number (for example the Arduino Uno) generate a
 
 `ID?` reports `proto=1`. New commands and new keys are additive and don't change the version; only a breaking change does. The host supports the current version and the previous one.
 
-## 9. Function: `photometer` (TSL2591 + LEDs)
+## 9. Function: `photometer` (TSL2591 + one LED)
+
+Reference firmware: `firmware/sketches/photometer` (Arduino UNO R4 Minima). There is one LED, driven by the board's 12-bit DAC. Its colour depends on which LED is physically fitted: the board only remembers it, so that the host knows the valid power range and records it with every measurement.
 
 | Command | Reply | Notes |
 |---|---|---|
-| `LED <colour> <power>` | `OK` | Colours `red` (power 100–4000), `orange` (780–850), `green` (780–900), `blue` (780–850). Power 0 turns the LED off. |
-| `LED?` | `OK color=<colour> power=<n>` | |
+| `LED <power>` | `OK power=<n>` | Drive level 0–4095 on the DAC; 0 turns the LED off. The host limits the range per colour. |
+| `LED?` | `OK power=<n> color=<colour>` | |
+| `LEDCOLOR <colour>` | `OK color=<colour>` | Which LED is fitted: `red`, `orange`, `green` or `blue`. Kept in EEPROM. |
 | `CFG <integration_ms> <gain>` | `OK int=<ms> gain=<g>` | Integration 100–600 ms in steps of 100; gain 1, 25, 428 or 9876. |
 | `CFG?` | `OK int=<ms> gain=<g>` | |
-| `READ <n>` | `OK bb=<counts> ir=<counts> sat=<0\|1>` | The mean of *n* conversions (1–15), full-spectrum and infrared counts. If *n* × integration time exceeds the 500 ms reply limit, the firmware answers `BUSY` and sends the same fields in `EVT DONE`. |
-| `HW?` | `OK sensor=tsl2591 leds=<id>` | |
+| `READ <n>` | `BUSY`, then `EVT DONE … bb=<counts> ir=<counts> sat=<0\|1> n=<n>` | The mean of *n* conversions (1–15), full-spectrum and infrared counts. `sat=1` if any conversion reached full scale. `STOP` ends it early (`EVT STOPPED … n=<done>`). |
+| `DIAG?` | `OK sensor=ok\|missing dac_bits=12` | Checks the sensor again. |
+| `HW?` | `OK sensor=tsl2591\|none led=<colour>` | |
 
-The host computes lux from the counts: `lux = (bb − ir)(1 − ir/bb) / (t·g/408)`.
+The host computes lux from the counts: `lux = (bb − ir)(1 − ir/bb) / (t·g/408)`. Full scale is 36 863 counts at 100 ms and 65 535 from 200 ms.
 
 ## 10. Example session
 
+Recorded from the reference photometer (UNO R4 Minima):
+
 ```
-← EVT BOOT proto=1
-→ ID?                       ← OK proto=1 board=uno fw=2.0.0 serial=7F3A91C2 name=Bench-3 functions=photometer links=usb
-→ photometer:LED red 1850   ← OK fn=photometer
-→ photometer:READ 3         ← OK fn=photometer bb=5691 ir=1899 sat=0
-→ photometer:LED green 5000 ← ERR 3 power out of range 780..900
+→ PING                      ← OK
+→ ID?                       ← OK proto=1 board=uno-r4-minima fw=2.0.0 serial=476B734F21FD name=LabInt-476B functions=photometer links=usb
+→ photometer:HW?            ← OK fn=photometer sensor=tsl2591 led=red
+→ photometer:LED 1850       ← OK fn=photometer power=1850
+→ photometer:READ 3         ← BUSY fn=photometer
+                            ← EVT DONE fn=photometer cmd=READ bb=598 ir=118 sat=0 n=3
+→ photometer:LED 99999      ← ERR 3 out of range 0..4095
+→ NOPE                      ← ERR 1 unknown command
 → photometer:SIM absorbance=0.3     (simulators only: set what is in the cuvette)
 ```
+
+The UNO R4 does not restart when the port is opened, so no `EVT BOOT` arrives then. The host sends `PING` to find out when a board is ready, and still waits for `EVT BOOT` (at most 3 s) when a board does reset.

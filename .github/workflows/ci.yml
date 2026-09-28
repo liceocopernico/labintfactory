@@ -35,3 +35,4 @@ jobs:
         run: uv run pytest
         env:
           QT_QPA_PLATFORM: offscreen
+          PYTHONWARNDEFAULTENCODING: "1"

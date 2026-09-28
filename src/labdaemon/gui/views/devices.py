@@ -11,12 +11,10 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
-    QMenu,
     QPushButton,
     QSizePolicy,
     QSplitter,
     QStackedWidget,
-    QToolButton,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
@@ -30,7 +28,7 @@ from labdaemon.core.i18n import _
 from labdaemon.core.manager import DeviceManager, DeviceSnapshot
 from labdaemon.gui import theme
 from labdaemon.gui.bridge import QtBridge
-from labdaemon.gui.widgets.components import Card, PageHeader, StatePill, muted, scaled_font, set_role
+from labdaemon.gui.widgets.components import Card, PageHeader, StatePill, muted, primary, scaled_font, set_role
 from labdaemon.gui.widgets.parameter_form import ParameterForm
 
 HISTORY_SECONDS = 60
@@ -56,12 +54,8 @@ class DevicesView(QWidget):
         title = set_role(QLabel(self.tr("Boards")), "role", "section")
         head.addWidget(title)
         head.addStretch()
-        self.add_button = QToolButton()
-        self.add_button.setText(self.tr("Add simulated device"))
-        self.add_button.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        set_role(self.add_button, "role", "menu-button")
-        self.add_menu = QMenu(self.add_button)
-        self.add_button.setMenu(self.add_menu)
+        self.add_button = primary(QPushButton(self.tr("Add device…")))
+        self.add_button.clicked.connect(self.open_add_dialog)
         head.addWidget(self.add_button)
         lv.addLayout(head)
         self.tree = QTreeWidget()
@@ -98,17 +92,21 @@ class DevicesView(QWidget):
         bridge.sample.connect(self._on_sample)
         bridge.parameters_changed.connect(self._on_parameters_changed)
         bridge.error.connect(self._on_error)
-        self._fill_add_menu()
         theme.on_change(self._rebuild_tree)
 
     # ── connecting ──
-    def _fill_add_menu(self) -> None:
-        self.add_menu.clear()
-        simulated = {pid: cls for pid, cls in self.manager.registry.devices().items() if cls.simulated}
-        for pid, cls in simulated.items():
-            action = self.add_menu.addAction(_(cls.name))
-            action.triggered.connect(lambda _checked=False, pid=pid: self.add_simulated(pid))
-        self.add_button.setEnabled(bool(simulated))
+    def open_add_dialog(self) -> None:
+        from labdaemon.gui.views.add_device import AddDeviceDialog
+
+        dialog = AddDeviceDialog(self.manager, self.bridge, self)
+        if dialog.exec() and dialog.connected_key:
+            self._select_key(dialog.connected_key)
+
+    def connect_serial(self, port: str) -> None:
+        self.detail.show_message(self.tr("Connecting…"))
+        future = self._connector.submit(self.manager.connect_serial, port)
+        self.bridge.watch(future, lambda board: self._select_board(board.key),
+                          lambda exc: self._show_error(self.tr("Could not connect: {0}").format(error_text(exc))))
 
     def add_simulated(self, plugin_id: str) -> None:
         self.detail.show_message(self.tr("Connecting…"))

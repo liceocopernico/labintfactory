@@ -21,7 +21,10 @@ def test_plugin_implements_its_capabilities():
 def photometer(manager):
     board = manager.simulate("tsl2591_photometer")
     dev = board.devices["photometer"]
-    return board, manager.proxy(dev.key)
+    photo = manager.proxy(dev.key)
+    assert photo.params.values()["led_power"] == 0  # the LED starts off, as on the real firmware
+    photo.set_parameter("led_power", 1850)
+    return board, photo
 
 
 def test_blank_reads_about_412_lux(photometer):
@@ -40,9 +43,9 @@ def test_absorbance_of_the_sample(manager, photometer):
 def test_colour_change_brings_power_into_range(photometer):
     _board, photo = photometer
     values = photo.set_parameter("led_color", "orange")
-    assert values["led_power"] == 850
+    assert values["led_power"] == 850  # 1850 fitted to the orange LED's maximum
     with pytest.raises(ParameterError):
-        photo.set_parameter("led_power", 1000)  # outside 780–850: user input is rejected, not clamped
+        photo.set_parameter("led_power", 1000)  # above 850: user input is rejected, not clamped
     with pytest.raises(ParameterError):
         photo.set_parameter("led_color", "purple")
 

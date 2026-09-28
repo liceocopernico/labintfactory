@@ -283,6 +283,26 @@ class WireClient:
         """Boards that reset when the port opens say EVT BOOT; wait for it instead of sleeping blindly."""
         return self.wait_event(["BOOT"], timeout) is not None
 
+    def wait_ready(self, timeout: float = 3.5) -> bool:
+        """Wait until the board answers PING.
+
+        Boards that reset when the port opens (classic Arduino) say EVT BOOT once they are up; boards
+        with native USB (UNO R4, ESP32-S3 …) don't reset and answer at once. So: PING right away, and if
+        there is no answer, keep listening for BOOT and PING again.
+        """
+        deadline = time.monotonic() + timeout
+        while (remaining := deadline - time.monotonic()) > 0:
+            try:
+                self.query("PING", timeout=min(0.4, remaining))
+                return True
+            except ProtocolTimeout:
+                pass
+            except (DeviceError, BadReply):
+                # something answered, but not yet sensibly (boot noise): drop it and try again
+                self.transport.reset_input()
+            self.wait_event(["BOOT"], min(1.0, max(0.0, deadline - time.monotonic())))
+        return False
+
     def identify(self) -> BoardInfo:
         info = BoardInfo.from_fields(self.query("ID?", timeout=1.0).values)
         if info.proto not in SUPPORTED_PROTOCOLS:

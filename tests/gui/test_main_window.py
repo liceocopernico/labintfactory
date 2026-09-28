@@ -34,6 +34,8 @@ def test_editing_a_setting_reaches_the_device(qtbot, window, manager):
     window.devices.add_simulated("tsl2591_photometer")
     qtbot.waitUntil(lambda: window.devices.current_key() is not None, timeout=5000)
     key = window.devices.current_key()
+    window.devices.detail.form.edited.emit("led_power", 1850)
+    qtbot.waitUntil(lambda: manager.snapshot(key).values["led_power"] == 1850, timeout=3000)
     window.devices.detail.form.edited.emit("led_color", "green")
     qtbot.waitUntil(lambda: manager.snapshot(key).values["led_color"] == "green", timeout=3000)
     assert manager.snapshot(key).values["led_power"] == 900  # followed the new colour's range

@@ -48,6 +48,8 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="labdaemon", description="LabDaemon: school lab instruments.")
     p.add_argument("--simulate", action="append", default=[], metavar="PLUGIN",
                    help="connect the simulated twin of a device plugin at start (e.g. tsl2591_photometer)")
+    p.add_argument("--connect", action="append", default=[], metavar="PORT",
+                   help="connect the board on this USB serial port at start (e.g. /dev/ttyACM0 or COM3)")
     p.add_argument("--plugin-dir", action="append", default=[], type=Path, metavar="DIR",
                    help="also look for folder plugins here")
     p.add_argument("--lang", choices=sorted(i18n.LANGUAGES), help="interface language for this run")
@@ -75,6 +77,8 @@ def main(argv: list[str] | None = None) -> int:
     bridge = QtBridge(manager)
     window = MainWindow(manager, registry, settings, bridge, app_theme)
     window.show()
+    for port in args.connect:
+        window.devices.connect_serial(port)
     for plugin_id in args.simulate:
         window.devices.add_simulated(plugin_id)
     logger.info("LabDaemon {} started (Python {}, language {})", __version__, sys.version.split()[0],

@@ -13,9 +13,9 @@ def test_defaults_user_and_policy(tmp_path):
     s.set("app.language", "it")
     s.set("devices.poll_interval_s", 1.0)
     s.save()
-    assert "[app]" in paths.user_settings.read_text()
+    assert "[app]" in paths.user_settings.read_text(encoding="utf-8")
     paths.machine_dir.mkdir(parents=True)
-    paths.policy.write_text('[app]\nlanguage = "en"\n[plugins]\nallow_user_plugins = false\n')
+    paths.policy.write_text('[app]\nlanguage = "en"\n[plugins]\nallow_user_plugins = false\n', encoding="utf-8")
     s2 = Settings(paths)
     assert s2.get("app.language") == "en"  # the policy wins
     assert s2.get("devices.poll_interval_s") == 1.0

@@ -1,18 +1,24 @@
 """The photometer device plugin: TSL2591 light sensor and LED light source on one board function."""
 
+import time
 from collections.abc import Mapping
 from typing import Any
 
 from labdaemon.core.capabilities import LightReading, LightSensor, LightSource, Sensor
 from labdaemon.core.data import Channel
 from labdaemon.core.device import Command, Device
+from labdaemon.core.errors import LabError
 from labdaemon.core.i18n import N_, _
 from labdaemon.core.parameters import Parameter
 from labdaemon.devices.tsl2591 import lux as tsl
-from labdaemon.devices.tsl2591.simulated import LED_RANGES, simulated_board
+from labdaemon.devices.tsl2591.simulated import COLORS, simulated_board
 
 # LED colour names are shown translated in forms
 COLOR_NAMES = (N_("red"), N_("orange"), N_("green"), N_("blue"))
+
+# Highest drive level (DAC, 0–4095) per LED colour, from the photometer's original firmware limits.
+# In M1 these move to the hardware sheet with the rest of the photometer's figures.
+LED_MAX = {"red": 4000, "orange": 850, "green": 900, "blue": 850}
 
 
 class Tsl2591Photometer(Device):
@@ -27,10 +33,11 @@ class Tsl2591Photometer(Device):
     # ── settings ──
     def parameters(self, values: Mapping[str, Any]) -> list[Parameter]:
         color = values.get("led_color", "red")
-        lo, hi = LED_RANGES.get(color, LED_RANGES["red"])
         return [
-            Parameter("led_color", N_("LED colour"), str, "red", choices=tuple(LED_RANGES)),
-            Parameter("led_power", N_("LED power"), int, lo, minimum=lo, maximum=hi, step=10),
+            Parameter("led_color", N_("LED colour"), str, "red", choices=COLORS,
+                      help=N_("The colour of the LED fitted in the photometer. It sets the allowed power.")),
+            Parameter("led_power", N_("LED power"), int, 0, minimum=0, maximum=LED_MAX.get(color, 4000), step=10,
+                      help=N_("Drive level of the LED, 0 = off.")),
             Parameter("integration_time", N_("Integration time"), int, 100, unit="ms",
                       choices=tsl.INTEGRATION_MS),
             Parameter("gain", N_("Analog gain"), int, 25, choices=tsl.GAINS, advanced=True,
@@ -42,14 +49,18 @@ class Tsl2591Photometer(Device):
     def open(self) -> None:
         led = self.wire.query("LED?")
         cfg = self.wire.query("CFG?")
+        color = led.str("color")
         values = self.params.values() | {
-            "led_color": led.str("color"), "led_power": led.int("power"),
+            "led_color": color if color in COLORS else "red", "led_power": led.int("power"),
             "integration_time": cfg.int("int"), "gain": cfg.int("gain")}
         self.params.replace(self.parameters(values), values)
 
     def apply_settings(self, values: Mapping[str, Any], changed: str) -> None:
-        if changed in ("led_color", "led_power"):
-            self.wire.query("LED", values["led_color"], values["led_power"])
+        if changed == "led_color":
+            self.wire.query("LEDCOLOR", values["led_color"])
+            self.wire.query("LED", values["led_power"])  # the power may have been fitted to the new range
+        elif changed == "led_power":
+            self.wire.query("LED", values["led_power"])
         elif changed in ("integration_time", "gain"):
             self.wire.query("CFG", values["integration_time"], values["gain"])
 
@@ -66,7 +77,8 @@ class Tsl2591Photometer(Device):
     def read_light(self, samples: int | None = None) -> LightReading:
         n = samples or self.params["samples"]
         t, g = self.params["integration_time"], self.params["gain"]
-        r = self.wire.run("READ", n, timeout=n * t / 1000 + 1.0)
+        # BUSY now, EVT DONE when the conversions are done; allow twice the nominal time plus margin
+        r = self.wire.run("READ", n, timeout=n * (2 * t / 1000 + 0.25) + 1.0)
         ch0, ch1 = r.int("bb"), r.int("ir")
         full = tsl.full_scale_counts(t)
         return LightReading(lux=tsl.lux(ch0, ch1, t, g), broadband=ch0, infrared=ch1,
@@ -74,10 +86,10 @@ class Tsl2591Photometer(Device):
 
     # ── LightSource ──
     def colors(self) -> list[str]:
-        return list(LED_RANGES)
+        return list(COLORS)
 
     def power_range(self, color: str) -> tuple[int, int]:
-        return LED_RANGES[color]
+        return 0, LED_MAX[color]
 
     def set_output(self, color: str, power: int) -> None:
         self.set_parameter("led_color", color)
@@ -98,3 +110,36 @@ class Tsl2591Photometer(Device):
 
     def poll(self) -> dict[str, float] | None:
         return self.read()
+
+
+def _firmware_checks(channel):
+    """Photometer-specific checks for `labdaemon firmware check` (firmware/PROTOCOL.md §9)."""
+    from labdaemon.core.conformance import Check
+
+    checks = []
+    try:
+        led = channel.query("LED?")
+        checks.append(Check("photometer: LED? reports power and colour", "power" in led and "color" in led,
+                            f"power={led.get('power')} color={led.get('color')}"))
+        cfg = channel.query("CFG?")
+        checks.append(Check("photometer: CFG? reports integration and gain", "int" in cfg and "gain" in cfg,
+                            f"int={cfg.get('int')} ms gain={cfg.get('gain')}"))
+        diag = channel.query("DIAG?")
+        checks.append(Check("photometer: the TSL2591 answers", diag.get("sensor") == "ok",
+                            f"sensor={diag.get('sensor')}"))
+        op = channel.start("READ", 1)
+        answered_busy = not op.done()  # OK straight away would break the 500 ms rule for long reads
+        deadline = time.monotonic() + 3.0
+        while not op.done() and time.monotonic() < deadline:
+            channel.client.pump(0.05)
+        result = op.wait(0) if op.done() else None
+        checks.append(Check("photometer: READ answers BUSY, then EVT DONE with bb, ir, sat",
+                            answered_busy and result is not None and all(k in result for k in ("bb", "ir", "sat")),
+                            f"bb={result.get('bb')} ir={result.get('ir')} sat={result.get('sat')}" if result
+                            else "no EVT DONE within 3 s"))
+    except LabError as e:
+        checks.append(Check("photometer: commands", False, f"{e.message} {e.detail or ''}".strip()))
+    return checks
+
+
+Tsl2591Photometer.firmware_checks = staticmethod(_firmware_checks)

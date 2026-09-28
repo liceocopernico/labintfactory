@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LabDaemon VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-28 20:30+0200\n"
+"POT-Creation-Date: 2026-09-28 20:54+0200\n"
 "PO-Revision-Date: 2026-09-28 20:13+0200\n"
 "Last-Translator: Matteo Mosangini\n"
 "Language: it\n"
@@ -30,6 +30,10 @@ msgstr "Bluetooth"
 msgid "Busy"
 msgstr "Occupato"
 
+#, python-brace-format
+msgid "Cannot open {port}."
+msgstr "Impossibile aprire {port}."
+
 msgid "Connecting"
 msgstr "Connessione in corso"
 
@@ -38,6 +42,9 @@ msgstr "Connessione persa"
 
 msgid "Disconnected"
 msgstr "Disconnesso"
+
+msgid "Drive level of the LED, 0 = off."
+msgstr "Livello di pilotaggio del LED, 0 = spento."
 
 msgid "Each value is the mean of this many conversions."
 msgstr "Ogni valore è la media di questo numero di conversioni."
@@ -66,6 +73,10 @@ msgstr "Colore del LED"
 msgid "LED power"
 msgstr "Potenza del LED"
 
+#, python-brace-format
+msgid "Lost the connection on {port}."
+msgstr "Connessione persa su {port}."
+
 msgid "Malformed error reply from the board."
 msgstr "La scheda ha inviato una risposta di errore malformata."
 
@@ -78,6 +89,18 @@ msgstr "Nessun dispositivo simulato disponibile per {plugin}."
 
 msgid "Nominal amplification: 1×, 25×, 428× or 9876×."
 msgstr "Amplificazione nominale: 1×, 25×, 428× o 9876×."
+
+#, python-brace-format
+msgid ""
+"Permission denied on {port}. Add your user to the 'dialout' group (or 'uucp' on Arch), then log out and "
+"back in."
+msgstr ""
+"Permesso negato su {port}. Aggiungi il tuo utente al gruppo 'dialout' (o 'uucp' su Arch), poi esci e "
+"rientra nella sessione."
+
+#, python-brace-format
+msgid "Permission denied on {port}. Close other programs that use it."
+msgstr "Permesso negato su {port}. Chiudi gli altri programmi che la usano."
 
 msgid "Photometer (TSL2591 + LED)"
 msgstr "Fotometro (TSL2591 + LED)"
@@ -117,6 +140,9 @@ msgstr "La risposta della scheda a ID? è incompleta."
 msgid "The board's reply lacks {key!r}."
 msgstr "Nella risposta della scheda manca {key!r}."
 
+msgid "The colour of the LED fitted in the photometer. It sets the allowed power."
+msgstr "Il colore del LED montato nel fotometro. Determina la potenza consentita."
+
 msgid "The connection to the board is closed."
 msgstr "La connessione con la scheda è chiusa."
 
@@ -153,6 +179,9 @@ msgstr "errore {code}"
 msgid "green"
 msgstr "verde"
 
+msgid "no answer to PING"
+msgstr "nessuna risposta a PING"
+
 msgid "orange"
 msgstr "arancione"
 
@@ -175,12 +204,8 @@ msgid "{board} is already connected."
 msgstr "{board} è già collegata."
 
 #, python-brace-format
-msgid ""
-"{board} speaks protocol version {version}; this LabDaemon supports "
-"{supported}."
-msgstr ""
-"{board} usa la versione {version} del protocollo; questo LabDaemon "
-"supporta {supported}."
+msgid "{board} speaks protocol version {version}; this LabDaemon supports {supported}."
+msgstr "{board} usa la versione {version} del protocollo; questo LabDaemon supporta {supported}."
 
 #, python-brace-format
 msgid "{label}: choose one of {options}."
@@ -193,4 +218,16 @@ msgstr "{label}: {value!r} non è un valore valido."
 #, python-brace-format
 msgid "{label}: {value} is outside {minimum}–{maximum}{unit}."
 msgstr "{label}: {value} è fuori dall'intervallo {minimum}–{maximum}{unit}."
+
+#, python-brace-format
+msgid "{port} is in use by another program."
+msgstr "{port} è in uso da un altro programma."
+
+#, python-brace-format
+msgid "{port} is not there any more. Is the board plugged in?"
+msgstr "{port} non è più presente. La scheda è collegata?"
+
+#, python-brace-format
+msgid "{target} does not answer. Is it a LabDaemon board with LabInt firmware?"
+msgstr "{target} non risponde. È una scheda LabDaemon con firmware LabInt?"
 

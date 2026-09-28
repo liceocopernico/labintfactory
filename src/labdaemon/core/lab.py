@@ -45,6 +45,14 @@ class Lab:
     def simulate(self, plugin_id: str) -> LabBoard:
         return LabBoard(self.manager, self.manager.simulate(plugin_id))
 
+    def scan(self):
+        """What is on each USB serial port (LabInt boards, other devices, boards already connected)."""
+        return self.manager.scan_serial()
+
+    def connect(self, port: str) -> LabBoard:
+        """Connect the board on a USB serial port, e.g. lab.connect("COM3") or lab.connect("/dev/ttyACM0")."""
+        return LabBoard(self.manager, self.manager.connect_serial(port))
+
     def boards(self) -> list[LabBoard]:
         return [LabBoard(self.manager, b) for b in self.manager.boards()]
 

@@ -1,34 +1,143 @@
 <?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="it_IT">
 <context>
+    <name>AddDeviceDialog</name>
+    <message>
+        <location filename="../views/add_device.py" line="34" />
+        <location filename="../views/add_device.py" line="37" />
+        <source>Add device</source>
+        <translation>Aggiungi dispositivo</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="38" />
+        <source>LabInt boards found on USB, and simulated devices for trying LabDaemon without hardware.</source>
+        <translation>Schede LabInt trovate su USB e dispositivi simulati per provare LabDaemon senza hardware.</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="41" />
+        <source>Where</source>
+        <translation>Dove</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="41" />
+        <source>Board</source>
+        <translation>Scheda</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="41" />
+        <source>Functions</source>
+        <translation>Funzioni</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="42" />
+        <source>Status</source>
+        <translation>Stato</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="55" />
+        <source>Search again</source>
+        <translation>Cerca di nuovo</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="59" />
+        <source>Close</source>
+        <translation>Chiudi</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="61" />
+        <source>Connect</source>
+        <translation>Collega</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="72" />
+        <source>Searching USB ports…</source>
+        <translation>Ricerca nelle porte USB…</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="81" />
+        <source>{0} USB port(s), {1} LabInt board(s).</source>
+        <translation>{0} porte USB, {1} schede LabInt.</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="82" />
+        <source>No USB serial ports found. Is the board plugged in?</source>
+        <translation>Nessuna porta seriale USB trovata. La scheda è collegata?</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="88" />
+        <source>{0} (no plugin)</source>
+        <translation>{0} (nessun plugin)</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="89" />
+        <source>connected</source>
+        <translation>collegata</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="90" />
+        <source>ready</source>
+        <translation>pronta</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="90" />
+        <source>no plugin for these functions</source>
+        <translation>nessun plugin per queste funzioni</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="96" />
+        <source>not a LabInt board ({0})</source>
+        <translation>non è una scheda LabInt ({0})</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="99" />
+        <source>simulated</source>
+        <translation>simulato</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="100" />
+        <source>for trying without hardware</source>
+        <translation>per provare senza hardware</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="128" />
+        <source>Connecting…</source>
+        <translation>Connessione in corso…</translation>
+    </message>
+    <message>
+        <location filename="../views/add_device.py" line="142" />
+        <source>Could not connect: {0}</source>
+        <translation>Connessione non riuscita: {0}</translation>
+    </message>
+</context>
+<context>
     <name>DeviceDetail</name>
     <message>
-        <location filename="../views/devices.py" line="263" />
+        <location filename="../views/devices.py" line="261" />
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="269" />
+        <location filename="../views/devices.py" line="267" />
         <source>Live reading</source>
         <translation>Lettura in tempo reale</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="280" />
+        <location filename="../views/devices.py" line="278" />
         <source>seconds ago</source>
         <translation>secondi fa</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="287" />
+        <location filename="../views/devices.py" line="285" />
         <source>Commands</source>
         <translation>Comandi</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="305" />
+        <location filename="../views/devices.py" line="303" />
         <source>board {board} · {link} · serial {serial} · firmware {fw} · protocol {proto}</source>
         <translation>scheda {board} · {link} · numero di serie {serial} · firmware {fw} · protocollo {proto}</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="353" />
+        <location filename="../views/devices.py" line="351" />
         <source>The sensor is saturated: lower the LED power or the gain.</source>
         <translation>Il sensore è saturo: riduci la potenza del LED o il guadagno.</translation>
     </message>
@@ -36,22 +145,22 @@
 <context>
     <name>DevicesView</name>
     <message>
-        <location filename="../views/devices.py" line="56" />
+        <location filename="../views/devices.py" line="54" />
         <source>Boards</source>
         <translation>Schede</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="60" />
-        <source>Add simulated device</source>
-        <translation>Aggiungi dispositivo simulato</translation>
+        <location filename="../views/devices.py" line="57" />
+        <source>Add device…</source>
+        <translation>Aggiungi dispositivo…</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="73" />
+        <location filename="../views/devices.py" line="67" />
         <source>Disconnect board</source>
         <translation>Scollega la scheda</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="80" />
+        <location filename="../views/devices.py" line="74" />
         <source>No device selected.
 
 Connect a board, or add a simulated device to try LabDaemon without hardware.</source>
@@ -60,17 +169,19 @@ Connect a board, or add a simulated device to try LabDaemon without hardware.</s
 Collega una scheda, oppure aggiungi un dispositivo simulato per provare LabDaemon senza hardware.</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="114" />
+        <location filename="../views/devices.py" line="106" />
+        <location filename="../views/devices.py" line="112" />
         <source>Connecting…</source>
         <translation>Connessione in corso…</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="117" />
+        <location filename="../views/devices.py" line="109" />
+        <location filename="../views/devices.py" line="115" />
         <source>Could not connect: {0}</source>
         <translation>Connessione non riuscita: {0}</translation>
     </message>
     <message>
-        <location filename="../views/devices.py" line="145" />
+        <location filename="../views/devices.py" line="143" />
         <source>{0}: no plugin installed</source>
         <translation>{0}: nessun plugin installato</translation>
     </message>

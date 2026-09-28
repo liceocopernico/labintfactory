@@ -3,7 +3,7 @@
 import itertools
 import threading
 from collections.abc import Callable
-from concurrent.futures import Future
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -12,7 +12,7 @@ from loguru import logger
 from labdaemon.core.board import BoardAddress, BoardInfo
 from labdaemon.core.data import Channel
 from labdaemon.core.device import Command, Device, DeviceState
-from labdaemon.core.errors import LabError, PluginError, TransportError
+from labdaemon.core.errors import LabError, PluginError, ProtocolTimeout, TransportError
 from labdaemon.core.events import Signal
 from labdaemon.core.i18n import _
 from labdaemon.core.parameters import Parameter
@@ -20,6 +20,7 @@ from labdaemon.core.registry import Registry
 from labdaemon.core.settings import Settings
 from labdaemon.core.transport import Transport
 from labdaemon.core.worker import BoardWorker, DeviceProxy
+from labdaemon.transports.serial import PortInfo, SerialTransport, list_ports
 from labdaemon.transports.simulated import SimulatedTransport
 from labdaemon.transports.wire import WireClient
 
@@ -43,6 +44,17 @@ class Board:
     @property
     def name(self) -> str:
         return self.info.name if self.info else str(self.address)
+
+
+@dataclass(frozen=True)
+class ScanResult:
+    """What a USB port holds: a LabInt board (with its functions), something else, or a connected board."""
+
+    port: PortInfo
+    info: BoardInfo | None = None
+    plugins: dict[str, str | None] = field(default_factory=dict)  # function → plugin id (None: no plugin)
+    connected: bool = False
+    error: str | None = None
 
 
 @dataclass(frozen=True)
@@ -88,7 +100,42 @@ class DeviceManager:
         sim.serial = f"SIM{n:04d}"
         return self.connect(SimulatedTransport(sim), BoardAddress("simulated", plugin_id))
 
-    def connect(self, transport: Transport, address: BoardAddress, *, timeout: float = 6.0) -> Board:
+    def connect_serial(self, port: str) -> Board:
+        return self.connect(SerialTransport(port), BoardAddress("serial", port))
+
+    def scan_serial(self, *, timeout: float = 3.5) -> list[ScanResult]:
+        """Ask every USB serial port that is not connected yet who it is (in parallel)."""
+        connected = {b.address.target: b for b in self.boards() if b.address.link == "serial"}
+        ports = list_ports()
+
+        def probe(port: PortInfo) -> ScanResult:
+            if port.device in connected:
+                board = connected[port.device]
+                return ScanResult(port, board.info, self._plugins_for(board.info), connected=True)
+            transport = SerialTransport(port.device)
+            wire = WireClient(transport)
+            try:
+                transport.open()
+                if not wire.wait_ready(timeout):
+                    return ScanResult(port, error=_("no answer to PING"))
+                info = wire.identify()
+                return ScanResult(port, info, self._plugins_for(info))
+            except LabError as e:
+                return ScanResult(port, error=e.message)
+            finally:
+                transport.close()
+
+        if not ports:
+            return []
+        with ThreadPoolExecutor(max_workers=min(8, len(ports)), thread_name_prefix="scan") as pool:
+            return list(pool.map(probe, ports))
+
+    def _plugins_for(self, info: BoardInfo | None) -> dict[str, str | None]:
+        if info is None:
+            return {}
+        return {fn: (cls.id if (cls := self.registry.device_for_model(fn)) else None) for fn in info.functions}
+
+    def connect(self, transport: Transport, address: BoardAddress, *, timeout: float = 8.0) -> Board:
         wire = WireClient(transport)
         worker = BoardWorker(str(address), idle=wire.pump)
         board = Board(address, transport, wire, worker)
@@ -141,7 +188,9 @@ class DeviceManager:
     # worker-thread side
     def _open_board(self, board: Board) -> None:
         board.transport.open()
-        board.wire.wait_boot(3.0)  # boards that don't reset simply don't say BOOT
+        if not board.wire.wait_ready(3.5):
+            raise ProtocolTimeout(_("{target} does not answer. Is it a LabDaemon board with LabInt firmware?")
+                                  .format(target=board.address.target))
         board.info = board.wire.identify()
         for fn in board.info.functions:
             cls = self.registry.device_for_model(fn)
