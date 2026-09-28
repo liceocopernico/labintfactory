@@ -1,0 +1,192 @@
+# Italian translations for LabDaemon.
+# Copyright (C) 2026 Matteo Mosangini
+# This file is distributed under the same license as the LabDaemon project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: LabDaemon VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-28 20:18+0200\n"
+"PO-Revision-Date: 2026-09-28 20:13+0200\n"
+"Last-Translator: Matteo Mosangini\n"
+"Language: it\n"
+"Language-Team: Italian\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "A limit was reached."
+msgstr "È stato raggiunto un limite."
+
+msgid "Analog gain"
+msgstr "Guadagno analogico"
+
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+msgid "Busy"
+msgstr "Occupato"
+
+msgid "Connecting"
+msgstr "Connessione in corso"
+
+msgid "Connection lost"
+msgstr "Connessione persa"
+
+msgid "Disconnected"
+msgstr "Disconnesso"
+
+msgid "Each value is the mean of this many conversions."
+msgstr "Ogni valore è la media di questo numero di conversioni."
+
+msgid "Error"
+msgstr "Errore"
+
+msgid "Full scale"
+msgstr "Fondo scala"
+
+msgid "Full spectrum"
+msgstr "Spettro completo"
+
+msgid "Illuminance"
+msgstr "Illuminamento"
+
+msgid "Infrared"
+msgstr "Infrarosso"
+
+msgid "Integration time"
+msgstr "Tempo di integrazione"
+
+msgid "LED colour"
+msgstr "Colore del LED"
+
+msgid "LED power"
+msgstr "Potenza del LED"
+
+msgid "Malformed error reply from the board."
+msgstr "La scheda ha inviato una risposta di errore malformata."
+
+msgid "Malformed line from the board (unbalanced quotes)."
+msgstr "La scheda ha inviato una riga malformata (virgolette non bilanciate)."
+
+#, python-brace-format
+msgid "No simulated device is available for {plugin}."
+msgstr "Nessun dispositivo simulato disponibile per {plugin}."
+
+msgid "Nominal amplification: 1×, 25×, 428× or 9876×."
+msgstr "Amplificazione nominale: 1×, 25×, 428× o 9876×."
+
+msgid "Photometer (TSL2591 + LED)"
+msgstr "Fotometro (TSL2591 + LED)"
+
+msgid "Read settings from device"
+msgstr "Leggi le impostazioni dal dispositivo"
+
+msgid "Readings per value"
+msgstr "Letture per valore"
+
+msgid "Ready"
+msgstr "Pronto"
+
+msgid "Settings read from the board."
+msgstr "Impostazioni lette dalla scheda."
+
+msgid "Stopped."
+msgstr "Interrotto."
+
+msgid "That device is not connected."
+msgstr "Quel dispositivo non è collegato."
+
+msgid "The board reports no functions."
+msgstr "La scheda non dichiara alcuna funzione."
+
+#, python-brace-format
+msgid "The board sent an invalid value for {key!r}."
+msgstr "La scheda ha inviato un valore non valido per {key!r}."
+
+msgid "The board was disconnected."
+msgstr "La scheda è stata scollegata."
+
+msgid "The board's ID? reply is incomplete."
+msgstr "La risposta della scheda a ID? è incompleta."
+
+#, python-brace-format
+msgid "The board's reply lacks {key!r}."
+msgstr "Nella risposta della scheda manca {key!r}."
+
+msgid "The connection to the board is closed."
+msgstr "La connessione con la scheda è chiusa."
+
+msgid "This setting is fixed by your administrator."
+msgstr "Questa impostazione è stabilita dall'amministratore."
+
+msgid "USB"
+msgstr "USB"
+
+msgid "Unexpected line from the board."
+msgstr "Riga inattesa dalla scheda."
+
+#, python-brace-format
+msgid "Unknown command: {key}"
+msgstr "Comando sconosciuto: {key}"
+
+#, python-brace-format
+msgid "Unknown setting: {key}"
+msgstr "Impostazione sconosciuta: {key}"
+
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+msgid "blue"
+msgstr "blu"
+
+msgid "counts"
+msgstr "conteggi"
+
+#, python-brace-format
+msgid "error {code}"
+msgstr "errore {code}"
+
+msgid "green"
+msgstr "verde"
+
+msgid "orange"
+msgstr "arancione"
+
+msgid "red"
+msgstr "rosso"
+
+msgid "simulated"
+msgstr "simulato"
+
+#, python-brace-format
+msgid "{board} did not answer in time."
+msgstr "{board} non ha risposto in tempo."
+
+#, python-brace-format
+msgid "{board} did not finish {verb} in time."
+msgstr "{board} non ha completato {verb} in tempo."
+
+#, python-brace-format
+msgid "{board} is already connected."
+msgstr "{board} è già collegata."
+
+#, python-brace-format
+msgid "{board} speaks protocol version {version}; this LabDaemon supports {supported}."
+msgstr "{board} usa la versione {version} del protocollo; questo LabDaemon supporta {supported}."
+
+#, python-brace-format
+msgid "{label}: choose one of {options}."
+msgstr "{label}: scegli tra {options}."
+
+#, python-brace-format
+msgid "{label}: {value!r} is not a valid value."
+msgstr "{label}: {value!r} non è un valore valido."
+
+#, python-brace-format
+msgid "{label}: {value} is outside {minimum}–{maximum}{unit}."
+msgstr "{label}: {value} è fuori dall'intervallo {minimum}–{maximum}{unit}."
+

@@ -51,8 +51,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
+# Translations (LabDaemon ships its compiled catalogs; the .pot template is regenerated)
 *.mo
+!src/labdaemon/locale/**/*.mo
 *.pot
 
 # Django stuff:

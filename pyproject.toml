@@ -1,35 +1,67 @@
 [build-system]
-requires = ["uv_build >= 0.10.0, <0.11.0"]
+requires = ["uv_build>=0.10.0,<0.13.0"]
 build-backend = "uv_build"
 
 [project]
-name = "labintfactory"
-version = "0.1.1"
-description = "Jupyterlab interface factory"
+name = "labdaemon"
+version = "0.1.0.dev0"
+description = "Desktop app for school lab instruments: boards, devices, experiments and data"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = "GPL-3.0-or-later"
 license-files = ["LICEN[CS]E*"]
-dependencies = [
-    "gdx>=3",
-    "godirect>=1.2.1",
-    "ipympl>=0.10.0",
-    "ipysheet>=0.7.0",
-    "ipywidgets>=8.1.8",
-    "jupyter>=1.1.1",
-    "loguru>=0.7.3",
-    "pyserial>=3.5",
-    "scikit-learn>=1.8.0",
-]
-
 authors = [
     { name = "Matteo Mosangini", email = "mosangini.matteo@liceocopernico.org" }
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Education",
+]
+# Only what M0 uses; later milestones add pyserial, scipy, bleak, zeroconf, godirect, qtmonaco …
+dependencies = [
+    "PySide6-Essentials>=6.9",
+    "pyqtgraph>=0.14",
+    "numpy>=2.3",
+    "platformdirs>=4.3",
+    "loguru>=0.7.3",
+    "tomli-w>=1.2",
 ]
 
 [project.urls]
 Homepage = "https://github.com/liceocopernico/labintfactory"
 Issues = "https://github.com/liceocopernico/labintfactory/issues"
+
+[project.scripts]
+labdaemon = "labdaemon.__main__:main"
+
+# Built-in plugins. Folder plugins use the same table shape in their plugin.toml.
+[project.entry-points."labdaemon.transports"]
+simulated = "labdaemon.transports.simulated:SimulatedTransport"
+
+[project.entry-points."labdaemon.devices"]
+tsl2591_photometer = "labdaemon.devices.tsl2591:Tsl2591Photometer"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-qt>=4.4",
+    "ruff>=0.8",
+    "babel>=2.16",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+qt_api = "pyside6"
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I", "UP"]
+# E731: small lambdas are fine; B027: Device/Transport hooks are optional on purpose
+ignore = ["E731", "B027"]
