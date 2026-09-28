@@ -209,3 +209,4 @@ config.ini
 test.db
 *~
 *egg-info
+.claude
