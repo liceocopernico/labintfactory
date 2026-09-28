@@ -1,4 +1,4 @@
-// LabDaemon photometer firmware 2.0 — Arduino UNO R4 Minima, TSL2591 light sensor, one LED on the DAC.
+// LabDaemon photometer firmware 2.0.1 — Arduino UNO R4 Minima, TSL2591 light sensor, one LED on the DAC.
 //
 // Function "photometer" (firmware/PROTOCOL.md §9):
 //   LED <0..4095>        LED drive level on the 12-bit DAC (pin A0); 0 = off
@@ -7,14 +7,19 @@
 //   CFG <ms> <gain>      integration 100..600 ms (steps of 100), gain 1 | 25 | 428 | 9876
 //   CFG?                 -> int=… gain=…
 //   READ <n>             BUSY, then EVT DONE bb=… ir=… sat=0|1 n=…: mean of n conversions
-//   DIAG?                -> sensor=ok|missing
+//   DIAG?                -> sensor=ok|missing i2c_errors=… recoveries=…
 //
 // The TSL2591 is driven directly over I2C without blocking, so the board always answers
 // within the protocol's 500 ms and STOP works during a measurement.
+//
+// I2C robustness (2.0.1): on the UNO R4 core, a Wire transaction that times out is never aborted,
+// and every later one then fails until the board is reset. So the firmware polls the sensor only
+// as often as needed, and after any failed transaction it restarts Wire, clocks the bus free,
+// reconfigures the sensor and retries before reporting a fault.
 #include <LabInt.h>
 #include <Wire.h>
 
-LabInt board("2.0.0");
+LabInt board("2.0.1");
 LabInt::Function& photo = board.function("photometer");
 
 // ── TSL2591 ──────────────────────────────────────────────────────────────────────────────────────
@@ -24,20 +29,57 @@ const uint8_t COMMAND = 0xA0;  // command bit + normal transaction
 const uint8_t REG_ENABLE = 0x00, REG_CONTROL = 0x01, REG_ID = 0x12, REG_STATUS = 0x13, REG_C0DATAL = 0x14;
 const uint8_t PON = 0x01, AEN = 0x02, DEVICE_ID = 0x50;
 
+unsigned long errors = 0, recoveries = 0;
+
 bool write8(uint8_t reg, uint8_t value) {
   Wire.beginTransmission(ADDRESS);
   Wire.write(COMMAND | reg);
   Wire.write(value);
-  return Wire.endTransmission() == 0;
+  if (Wire.endTransmission() == 0) return true;
+  errors++;
+  return false;
 }
 
 bool read(uint8_t reg, uint8_t* out, uint8_t n) {
   Wire.beginTransmission(ADDRESS);
   Wire.write(COMMAND | reg);
-  if (Wire.endTransmission(false) != 0) return false;
-  if (Wire.requestFrom(ADDRESS, n) != n) return false;
+  if (Wire.endTransmission(false) != 0 || Wire.requestFrom(ADDRESS, n) != n) {
+    errors++;
+    return false;
+  }
   for (uint8_t i = 0; i < n; ++i) out[i] = Wire.read();
   return true;
+}
+
+void beginBus() {
+  Wire.begin();
+  Wire.setClock(100000);
+  Wire.setWireTimeout(20000);  // 20 ms: a TSL2591 transaction takes well under 1 ms
+}
+
+// Restart Wire and free the bus: if the sensor was cut off in the middle of a byte it may hold SDA
+// low; up to nine SCL pulses let it finish, then a STOP condition resets both sides.
+void recover() {
+  recoveries++;
+  Wire.end();
+  pinMode(SDA, INPUT_PULLUP);
+  pinMode(SCL, OUTPUT);
+  for (uint8_t i = 0; i < 9 && digitalRead(SDA) == LOW; ++i) {
+    digitalWrite(SCL, LOW);
+    delayMicroseconds(5);
+    digitalWrite(SCL, HIGH);
+    delayMicroseconds(5);
+  }
+  pinMode(SDA, OUTPUT);
+  digitalWrite(SDA, LOW);
+  delayMicroseconds(5);
+  digitalWrite(SCL, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(SDA, HIGH);  // STOP
+  delayMicroseconds(5);
+  pinMode(SDA, INPUT);
+  pinMode(SCL, INPUT);
+  beginBus();
 }
 
 bool present() {
@@ -80,16 +122,32 @@ uint8_t again = 1;  // 0..3 → gain 1, 25, 428, 9876
 
 struct Reading {
   bool active = false;
-  uint8_t wanted = 0, done = 0;
+  uint8_t wanted = 0, done = 0, retries = 0;
   uint32_t sum0 = 0, sum1 = 0;
   bool saturated = false;
-  unsigned long started = 0;
+  unsigned long started = 0, nextPoll = 0;
 } reading;
+
+const uint8_t MAX_RETRIES = 3;
 
 uint16_t integrationMs() { return (atime + 1) * 100; }
 uint16_t fullScale() { return atime == 0 ? 36863 : 65535; }
 
 void applyLed() { analogWrite(DAC, ledPower); }
+
+// Configure the sensor and start an integration, recovering the bus once if I2C fails.
+bool startConversion() {
+  for (uint8_t attempt = 0; attempt < 2; ++attempt) {
+    if (tsl2591::configure(atime, again) && tsl2591::start()) {
+      reading.started = millis();
+      reading.nextPoll = reading.started + integrationMs();  // don't ask before it can be ready
+      return true;
+    }
+    tsl2591::recover();
+    board.debug("I2C error: bus recovered");
+  }
+  return false;
+}
 
 // ── commands ─────────────────────────────────────────────────────────────────────────────────────
 void cmdLed(LabInt::Request& rq) {
@@ -141,19 +199,26 @@ void cmdCfgQuery(LabInt::Request& rq) {
 void cmdRead(LabInt::Request& rq) {
   long n = rq.intArg(0, 1, 1, 15);
   if (!rq) return;
+  if (!sensorOk) {
+    tsl2591::recover();  // it may only be the bus that is stuck
+    sensorOk = tsl2591::present();
+  }
   if (!sensorOk) return rq.fail(LabInt::ERR_HARDWARE, "TSL2591 not found");
-  if (!tsl2591::configure(atime, again) || !tsl2591::start())
-    return rq.fail(LabInt::ERR_HARDWARE, "sensor not answering");
   reading = Reading();
+  if (!startConversion()) return rq.fail(LabInt::ERR_HARDWARE, "sensor not answering");
   reading.active = true;
   reading.wanted = (uint8_t)n;
-  reading.started = millis();
   rq.busy();
 }
 
 void cmdDiag(LabInt::Request& rq) {
   sensorOk = tsl2591::present();
-  rq.ok().kv("sensor", sensorOk ? "ok" : "missing").kv("dac_bits", 12L).send();
+  if (!sensorOk) {
+    tsl2591::recover();
+    sensorOk = tsl2591::present();
+  }
+  rq.ok().kv("sensor", sensorOk ? "ok" : "missing").kv("dac_bits", 12L)
+      .kv("i2c_errors", tsl2591::errors).kv("recoveries", tsl2591::recoveries).send();
 }
 
 void onStop(LabInt::Line& stopped) {
@@ -173,21 +238,29 @@ void onReset() {
 }
 
 // ── measurement state machine ────────────────────────────────────────────────────────────────────
+// A failed conversion is retried (after recovering the bus) before it becomes a FAULT.
+void retryOrFault(const char* why) {
+  if (reading.retries++ < MAX_RETRIES) {
+    tsl2591::recover();
+    board.debug("I2C error during READ: bus recovered, conversion restarted");
+    if (startConversion()) return;
+  }
+  reading.active = false;
+  tsl2591::powerOff();
+  photo.fault(LabInt::ERR_HARDWARE, why);
+}
+
 void updateReading() {
-  if (!reading.active) return;
+  if (!reading.active || (long)(millis() - reading.nextPoll) < 0) return;
+  reading.nextPoll = millis() + 5;  // then every 5 ms: a few I2C transactions per reading, not thousands
   int state = tsl2591::ready();
   if (state == 0) {
-    if (millis() - reading.started > 2UL * integrationMs() + 250) {
-      reading.active = false;
-      tsl2591::powerOff();
-      photo.fault(LabInt::ERR_HARDWARE, "sensor timeout");
-    }
+    if (millis() - reading.started > 2UL * integrationMs() + 250) retryOrFault("sensor timeout");
     return;
   }
   uint16_t c0 = 0, c1 = 0;
   if (state < 0 || !tsl2591::counts(c0, c1)) {
-    reading.active = false;
-    photo.fault(LabInt::ERR_HARDWARE, "I2C error");
+    retryOrFault("I2C error");
     return;
   }
   reading.sum0 += c0;
@@ -195,8 +268,7 @@ void updateReading() {
   if (c0 >= fullScale() || c1 >= fullScale()) reading.saturated = true;
   reading.done++;
   if (reading.done < reading.wanted) {
-    tsl2591::start();
-    reading.started = millis();
+    if (!startConversion()) retryOrFault("sensor not answering");
     return;
   }
   reading.active = false;
@@ -211,7 +283,7 @@ void updateReading() {
 
 void setup() {
   Serial.begin(115200);
-  Wire.begin();
+  tsl2591::beginBus();
   analogWriteResolution(12);
   applyLed();  // LED off until the host sets a power
 

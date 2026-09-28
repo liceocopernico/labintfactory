@@ -99,7 +99,7 @@ Boards without a hardware serial number (for example the Arduino Uno) generate a
 
 ## 9. Function: `photometer` (TSL2591 + one LED)
 
-Reference firmware: `firmware/sketches/photometer` (Arduino UNO R4 Minima). There is one LED, driven by the board's 12-bit DAC. Its colour depends on which LED is physically fitted: the board only remembers it, so that the host knows the valid power range and records it with every measurement.
+Reference firmware: `firmware/sketches/photometer` (Arduino UNO R4 Minima), version 2.0.1. There is one LED, driven by the board's 12-bit DAC. Its colour depends on which LED is physically fitted: the board only remembers it, so that the host knows the valid power range and records it with every measurement.
 
 | Command | Reply | Notes |
 |---|---|---|
@@ -109,7 +109,7 @@ Reference firmware: `firmware/sketches/photometer` (Arduino UNO R4 Minima). Ther
 | `CFG <integration_ms> <gain>` | `OK int=<ms> gain=<g>` | Integration 100–600 ms in steps of 100; gain 1, 25, 428 or 9876. |
 | `CFG?` | `OK int=<ms> gain=<g>` | |
 | `READ <n>` | `BUSY`, then `EVT DONE … bb=<counts> ir=<counts> sat=<0\|1> n=<n>` | The mean of *n* conversions (1–15), full-spectrum and infrared counts. `sat=1` if any conversion reached full scale. `STOP` ends it early (`EVT STOPPED … n=<done>`). |
-| `DIAG?` | `OK sensor=ok\|missing dac_bits=12` | Checks the sensor again. |
+| `DIAG?` | `OK sensor=ok\|missing dac_bits=12 i2c_errors=<n> recoveries=<n>` | Checks the sensor again (recovering the I²C bus if needed) and reports how many I²C transactions failed and how often the bus was recovered since power-up. |
 | `HW?` | `OK sensor=tsl2591\|none led=<colour>` | |
 
 The host computes lux from the counts: `lux = (bb − ir)(1 − ir/bb) / (t·g/408)`. Full scale is 36 863 counts at 100 ms and 65 535 from 200 ms.

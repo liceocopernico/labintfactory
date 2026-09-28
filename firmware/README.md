@@ -28,6 +28,7 @@ The Arduino IDE also works: install `lib/LabInt` as a library (Sketch → Includ
 ## Notes
 
 - **Photometer hardware:** there is one LED, and its colour is whichever LED is fitted. `LEDCOLOR` only records it, in EEPROM, so the host knows the allowed power range and can store it with each measurement.
+- **I²C on the UNO R4:** the core's `Wire` library never aborts a transaction that times out, and every later one then fails until the board is reset. Firmware 2.0.0 lost the sensor this way after 20–60 s of continuous polling. Since 2.0.1 the sketch asks the sensor only as often as needed (after the integration time, then every 5 ms), and after any failed transaction it restarts `Wire`, clocks the bus free, reconfigures the sensor and retries. `DIAG?` reports how often that happened.
 - **The TSL2591 driver is in the sketch**, not the Adafruit library. The Adafruit library waits inside each reading (up to 840 ms), which would break the 500 ms reply rule and stop `STOP` from working during a measurement.
 - **Memory on small AVR boards:** a minimal LabInt sketch uses 1 287 bytes of the classic Uno's 2 048 bytes of RAM. It fits, but with a thin margin; moving the library's strings to flash is planned before AVR boards are used for real.
 - **Previous firmware:** the photometer ran the single-character "… executed" protocol. Its source is in the separate `absorbance_photometer` repository (`firmware/firmware_2591`); flash it back from there if needed.
