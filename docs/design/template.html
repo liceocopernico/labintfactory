@@ -305,7 +305,7 @@ html{scroll-behavior:smooth}
 
 <main class="doc">
 <header>
-  <div class="eyebrow">Design proposal · draft 0.8</div>
+  <div class="eyebrow">Design proposal · draft 0.9</div>
   <h1 style="margin-top:14px">LabDaemon Desktop</h1>
   <p class="lede">LabDaemon is a standalone Windows and Linux application for school lab instruments. A small Qt-free core runs three layers of plugins: transports, devices and experiments. A PySide6 interface on top offers a guided mode for first runs and students, and an expert mode for everything after.</p>
   <div class="meta">
@@ -317,11 +317,14 @@ html{scroll-behavior:smooth}
     <p><strong>How to review.</strong> Settled choices carry a <span class="tag dec">Decision</span> label. All open questions are now answered; §14 lists what to verify first, in M0. In the mockups (§8), the numbered markers <span class="co">1</span> refer to the notes under each figure.</p>
   </div>
   <div class="note">
+    <p><strong>What changed in draft 0.9</strong>: the multi-LED photometer board moves to the end of the roadmap, after M6, and gains a sketch of its enclosure (§13).</p>
+  </div>
+  <div class="note">
     <p><strong>What changed in draft 0.8</strong>: the real photometer, as found and built in M1.</p>
     <ul style="margin:6px 0 2px">
       <li><strong>One LED, not four.</strong> The photometer has a single LED driven by the board's 12-bit DAC. Its colour is whichever LED is fitted. The protocol is now <code>LED &lt;power&gt;</code>, plus <code>LEDCOLOR &lt;colour&gt;</code>, which records the fitted LED in EEPROM so the app knows its power range and stores it with every measurement (§4.4, mockups 2 and 9).</li>
       <li><strong>Arduino UNO R4 Minima.</strong> The photometer board is an UNO R4 (Renesas RA4M1), not a classic AVR Uno. It is now in the platform table: its serial number comes from the chip's factory ID, and it does not reset when the port opens, so the app checks readiness with <code>PING</code> (§4.4).</li>
-      <li><strong>Next goal: a multi-LED photometer board</strong> with LEDs the firmware can switch between, which brings back colour selection by command (§13).</li>
+      <li><strong>A later goal: a multi-LED photometer board</strong> with LEDs the firmware can switch between, which brings back colour selection by command (§13).</li>
       <li>M0 and M1 status in the roadmap, and the results of early checks C1 and C3 (§13, §14).</li>
       <li>Draft 0.7 aligned the mockups' colours with the implemented theme (§7.5).</li>
     </ul>
@@ -2002,19 +2005,20 @@ update_check = false</code></pre>
   <div class="mile">
     <div><b>M0</b><div><p><span class="tag dec">Done</span> <strong>Skeleton and protocol.</strong> Core contracts, registry, events, boards and functions, <code>BoardWorker</code>, <code>WireClient</code>, and <code>PROTOCOL.md</code> v1 with its Python <code>WireSimulator</code>. Settings and the policy merge. A simulated photometer and the main window with the Devices view, in English with the translation pipeline already wired.</p><p class="exit">Done when a simulated photometer connects over the simulated wire protocol and its live reading updates in the status bar and the Devices view.</p></div></div>
     <div><b>M1</b><div><p><span class="tag dec">Nearly done</span> <strong>Photometer parity.</strong> Done: the <code>LabInt</code> C++ library, photometer firmware 2.0 flashed on the UNO R4 Minima, <code>firmware check</code> (11 of 11 checks pass), USB connection and scanning, the TSL2591 plugin with its hardware sheet, the absorbance experiment in guided and expert mode, the calibration library, linear fits with uncertainties, and <code>.labint</code> sessions. CI passes on Windows and Ubuntu.</p><p class="exit">Still to do: a complete absorbance lab with real solutions, on real hardware, on Windows and on Linux.</p></div></div>
-    <div><b>Next</b><div><p><strong>Multi-LED photometer board.</strong> A photometer with several LEDs (for example red, orange, green and blue) that the firmware can switch between, instead of swapping LEDs by hand.</p>
-      <ul>
-        <li><strong>Hardware:</strong> one constant-current driver fed by the DAC, with one switch per LED so that only one is lit, so the drive level stays a DC current rather than PWM, which would beat with the sensor's integration time. The LEDs sit on a common holder aimed at the cuvette.</li>
-        <li><strong>Protocol:</strong> backward compatible. <code>HW?</code> reports <code>leds=red,orange,green,blue</code> instead of <code>led=…</code>, and <code>LED &lt;power&gt; [colour]</code> takes an optional colour. Single-LED boards keep working unchanged.</li>
-        <li><strong>Plugin:</strong> the same photometer plugin; the LED colour becomes a real setting, and calibrations can restore it on their own.</li>
-        <li><strong>New in the experiments:</strong> choosing the LED that the sample absorbs most, automatically, and a four-point absorption spectrum.</li>
-      </ul>
-      <p class="exit">Done when the absorbance experiment picks the best LED by itself and a calibration restores the LED colour without anyone touching the hardware.</p></div></div>
     <div><b>M2</b><div><p><strong>Kinetics, data and leases.</strong> The reaction kinetics experiment with first- and second-order fits, the Fit dock, the Data view, CSV presets, experiment tabs with leases, the student lock, and the Hardware tab with its live operating point.</p></div></div>
     <div><b>M3</b><div><p><strong>Field profile.</strong> Stepper firmware on Teensy with asynchronous <code>MOVE</code>, <code>STOP</code> and limit events; the stepper plugin; the Vernier plugin over USB and Bluetooth; the field profile experiment with immediate stop and solenoid and dipole fits.</p></div></div>
     <div><b>M4</b><div><p><strong>Release.</strong> Windows installer (all users or per user, silent switches), <code>.deb</code> and AppImage, the machine policy, the complete Italian translation, the user guide in English and Italian, and "Update firmware…" with precompiled reference firmware (level 1 of §7.3).</p></div></div>
     <div><b>M5</b><div><p><strong>Wireless and more boards.</strong> ESP32 links (Wi-Fi with mDNS and <code>AUTH</code>, Bluetooth with the Nordic UART Service), the Wi-Fi setup dialog, a combined-board reference sketch (photometer + thermometer), and STM32 builds of the library.</p></div></div>
     <div><b>M6</b><div><p><strong>Firmware view and extensibility.</strong> Compile and upload through <code>arduino-cli</code>, the Monaco editor with the Arduino language server, sketch and plugin templates, the plugin <code>new</code>/<code>check</code> commands, the plugin author guide and the generic data logger. Optionally, an MSI package.</p></div></div>
+    <div><b>Last</b><div><p><strong>Multi-LED photometer board.</strong> Developed after M6, once everything else is done. A photometer with several LEDs (for example red, orange, green and blue) that the firmware can switch between, instead of swapping LEDs by hand.</p>
+      <ul>
+        <li><strong>Hardware:</strong> one constant-current driver fed by the DAC, with one switch per LED so that only one is lit, so the drive level stays a DC current rather than PWM, which would beat with the sensor's integration time. The driver is an op-amp current sink, so the current follows the DAC code whatever the LED's forward voltage (about 2 V for red, 3.2 V for blue).</li>
+        <li><strong>Enclosure:</strong> fixed LEDs, no moving parts. The LEDs (or one multi-colour package) sit close together behind a diffuser and a 1–2 mm aperture, so every colour crosses the cuvette along the same path. The body is printed in matte black, with a lid over the cuvette well and wires routed through a bend so no room light gets in.</li>
+        <li><strong>Protocol:</strong> backward compatible. <code>HW?</code> reports <code>leds=red,orange,green,blue</code> instead of <code>led=…</code>, and <code>LED &lt;power&gt; [colour]</code> takes an optional colour. Single-LED boards keep working unchanged.</li>
+        <li><strong>Plugin:</strong> the same photometer plugin; the LED colour becomes a real setting, and calibrations can restore it on their own.</li>
+        <li><strong>New in the experiments:</strong> choosing the LED that the sample absorbs most, automatically, and a four-point absorption spectrum.</li>
+      </ul>
+      <p class="exit">Done when the absorbance experiment picks the best LED by itself and a calibration restores the LED colour without anyone touching the hardware.</p></div></div>
   </div>
 </section>
 
@@ -2030,7 +2034,7 @@ update_check = false</code></pre>
     <li id="c6"><b>C6</b><div><strong>Installer size</strong><p>Measure how much the embedded web engine (<code>PySide6-Addons</code>) adds to the Windows installer and the AppImage. If it is too much for school PCs, the Firmware view's editor can become a separate optional download.</p></div></li>
   </ol>
   <div class="note"><p><strong>Answered questions.</strong> Draft 0.2: Q1 firmware, Q2 stopping, Q4 languages, Q6 scipy. Draft 0.3: Q3, Q5, Q7–Q13. Draft 0.4: Q14 Wi-Fi addressing, Q15 package name, Q16 installer. All of them are in the decisions table in §0.</p></div>
-  <p class="foot-note" style="margin-top:28px">Draft 0.8 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
+  <p class="foot-note" style="margin-top:28px">Draft 0.9 · prepared for Matteo Mosangini · based on <code>labintfactory</code> 0.1.1 (commit 6459a03).</p>
 </section>
 </main>
 </div>
