@@ -1,0 +1,5 @@
+PHOTOMETER HW
+
+That one error in several minutes suggests the wiring is marginal rather than broken. If the sensor sits on long jumper wires, shortening them or adding 4.7 kΩ pull-ups on SDA and SCL would make errors rarer still, though the firmware now copes either way. If it happens again during a lab, DIAG? in the Devices view's raw console will show the counts.
+
+I've added this pitfall to the firmware README, and noted in my memory to use the same recovery in every future UNO R4 sketch, including the multi-LED board.
